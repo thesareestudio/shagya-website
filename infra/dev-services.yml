@@ -1,0 +1,39 @@
+# =============================================================================
+# Shagya — Local Development Services
+# =============================================================================
+# Start: docker compose -f infra/dev-services.yml up -d
+# Stop:  docker compose -f infra/dev-services.yml down
+# Reset: docker compose -f infra/dev-services.yml down -v
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 18 — matches Neon production
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:18-alpine
+    container_name: shagya-pg
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: shagya
+      POSTGRES_PASSWORD: shagya_dev
+      POSTGRES_DB: shagya
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U shagya -d shagya']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  pgdata:
+    name: shagya-pgdata
