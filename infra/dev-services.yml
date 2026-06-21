@@ -6,15 +6,13 @@
 # Reset: docker compose -f infra/dev-services.yml down -v
 # =============================================================================
 
-name: shagya-dev
-
 services:
   # ---------------------------------------------------------------------------
   # PostgreSQL 18 — matches Neon production
   # ---------------------------------------------------------------------------
   postgres:
     image: postgres:18-alpine
-    container_name: shagya-dev-postgres
+    container_name: shagya-pg
     restart: unless-stopped
     ports:
       - '5432:5432'
@@ -36,6 +34,57 @@ services:
         max-size: '10m'
         max-file: '3'
 
+  # ---------------------------------------------------------------------------
+  # MinIO — S3-compatible storage (local replacement for Cloudflare R2)
+  # ---------------------------------------------------------------------------
+  # API:          http://localhost:9000  (S3 endpoint)
+  # Console:      http://localhost:9001  (web UI — login with minioadmin/minioadmin)
+  # Bucket:       shagya-media (auto-created on first start)
+  # ===========================================================================
+  minio:
+    image: minio/minio:latest
+    container_name: shagya-minio
+    restart: unless-stopped
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # Web console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ---------------------------------------------------------------------------
+  # MinIO bucket creator — creates the shagya-media bucket on startup
+  # ---------------------------------------------------------------------------
+  minio-create-bucket:
+    image: minio/mc:latest
+    container_name: shagya-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set local http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
+      /usr/bin/mc mb local/shagya-media --ignore-existing;
+      echo '✓ MinIO bucket shagya-media ready';
+      exit 0;
+      "
+
 volumes:
   pgdata:
-    name: shagya-dev-pgdata
+    name: shagya-pgdata
+  miniodata:
+    name: shagya-miniodata
