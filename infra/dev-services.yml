@@ -20,8 +20,9 @@ services:
       POSTGRES_USER: shagya
       POSTGRES_PASSWORD: shagya_dev
       POSTGRES_DB: shagya
+      PGDATA: /var/lib/postgresql/pgdata
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U shagya -d shagya']
       interval: 10s

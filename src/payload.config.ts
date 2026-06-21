@@ -9,8 +9,6 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { seoPlugin } from '@payloadcms/plugin-seo'
-import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { Users } from './collections/Users'
 import sharp from 'sharp'
 import path from 'path'
@@ -27,14 +25,14 @@ export default buildConfig({
   // Admin Panel
   // ---------------------------------------------------------------------------
   admin: {
-    // Admin users are managed through the standard Payload Users collection
     user: 'users',
+    importMap: {
+      baseDir: path.resolve(dirname),
+      importMapFile: path.resolve(dirname, 'app/(payload)/admin/importMap.js'),
+    },
     meta: {
       titleSuffix: '— Shagya',
       icons: [{ url: '/favicon.ico' }],
-    },
-    components: {
-      // Custom admin branding will go here (Phase 2)
     },
   },
 
@@ -90,42 +88,25 @@ export default buildConfig({
         forcePathStyle: true,
       },
     }),
-
-    // SEO plugin — auto-generates meta fields for specified collections
-    seoPlugin({
-      collections: [],
-      uploadsCollection: 'media',
-      generateTitle: ({ doc }) => `Shagya — ${doc?.title || 'Saree Store'}`,
-      generateDescription: ({ doc }) =>
-        (doc as Record<string, unknown>)?.excerpt as string ||
-        'Shop handcrafted Indian sarees at Shagya. Premium silk, cotton, and designer sarees with free shipping in India.',
-    }),
-
-    // Form Builder — contact forms, inquiry forms, newsletter signup
-    formBuilderPlugin({
-      fields: {
-        // Custom field overrides can be added here
-      },
-      formOverrides: {
-        // Admin UI label for forms
-        admin: {
-          group: 'Content',
-        },
-      },
-    }),
   ],
 
   // ---------------------------------------------------------------------------
   // TypeScript — auto-generate types from schema
   // ---------------------------------------------------------------------------
   typescript: {
-    outputFile: path.resolve(dirname, 'src/payload-types.ts'),
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
 
   // ---------------------------------------------------------------------------
   // Server
   // ---------------------------------------------------------------------------
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+
+  localization: {
+    locales: ['en'],
+    defaultLocale: 'en',
+    fallback: true,
+  },
 
   // ---------------------------------------------------------------------------
   // CORS — allow Next.js frontend and admin
