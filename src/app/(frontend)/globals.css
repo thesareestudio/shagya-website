@@ -12,33 +12,44 @@
    -------------------------------------------------------------------------- */
 
 @theme {
-  /* === Color: Brand (Warm Amber / Saffron Gold) ===
-     Hue ~65°. Chroma decreases as lightness approaches extremes. */
-  --color-brand-50: oklch(0.95 0.025 65);
-  --color-brand-100: oklch(0.90 0.05 65);
-  --color-brand-200: oklch(0.82 0.09 65);
-  --color-brand-300: oklch(0.75 0.12 65);
-  --color-brand-400: oklch(0.70 0.15 65);
-  --color-brand-500: oklch(0.65 0.18 65);
-  --color-brand-600: oklch(0.55 0.17 65);
-  --color-brand-700: oklch(0.45 0.14 65);
-  --color-brand-800: oklch(0.35 0.10 65);
-  --color-brand-900: oklch(0.25 0.06 65);
-  --color-brand-950: oklch(0.15 0.04 65);
+  /* === Color: Brand (Wine / Maroon) ===
+     Extracted from the official logo (#69254e → oklch(0.38 0.109 346)).
+     Hue ~346° (red→magenta). Heritage, regal, luxurious — the Sabyasachi-
+     minimalism direction. Chroma eases toward the extremes. */
+  --color-brand-50: oklch(0.96 0.012 346);
+  --color-brand-100: oklch(0.92 0.025 346);
+  --color-brand-200: oklch(0.85 0.05 346);
+  --color-brand-300: oklch(0.74 0.08 346);
+  --color-brand-400: oklch(0.6 0.1 346);
+  --color-brand-500: oklch(0.5 0.11 346);
+  --color-brand-600: oklch(0.42 0.11 346);
+  --color-brand-700: oklch(0.34 0.1 346);
+  --color-brand-800: oklch(0.26 0.08 346);
+  --color-brand-900: oklch(0.19 0.06 346);
+  --color-brand-950: oklch(0.13 0.04 346);
 
-  /* === Color: Neutrals (tinted toward brand hue 65) ===
-     Chroma 0.005-0.008 keeps them feeling natural, never flat gray. */
-  --color-neutral-50: oklch(0.97 0.005 65);
-  --color-neutral-100: oklch(0.92 0.006 65);
-  --color-neutral-200: oklch(0.85 0.007 65);
-  --color-neutral-300: oklch(0.72 0.008 65);
-  --color-neutral-400: oklch(0.60 0.008 65);
-  --color-neutral-500: oklch(0.48 0.008 65);
-  --color-neutral-600: oklch(0.38 0.007 65);
-  --color-neutral-700: oklch(0.28 0.006 65);
-  --color-neutral-800: oklch(0.19 0.005 65);
-  --color-neutral-900: oklch(0.12 0.004 65);
-  --color-neutral-950: oklch(0.06 0.003 65);
+  /* === Color: Accent (Zari Gold) ===
+     Hue ~85°, the gold thread-work that pairs with wine in premium sarees.
+     Used sparingly: small-caps labels, hairlines, dark-surface accents. */
+  --color-gold-200: oklch(0.88 0.06 85);
+  --color-gold-300: oklch(0.8 0.1 85);
+  --color-gold-400: oklch(0.72 0.12 85);
+  --color-gold-500: oklch(0.64 0.13 85);
+  --color-gold-600: oklch(0.55 0.12 85);
+
+  /* === Color: Neutrals (tinted toward brand hue 346) ===
+     Chroma 0.004-0.008 keeps them feeling natural, never flat gray. */
+  --color-neutral-50: oklch(0.97 0.004 346);
+  --color-neutral-100: oklch(0.92 0.006 346);
+  --color-neutral-200: oklch(0.85 0.007 346);
+  --color-neutral-300: oklch(0.72 0.008 346);
+  --color-neutral-400: oklch(0.6 0.008 346);
+  --color-neutral-500: oklch(0.48 0.008 346);
+  --color-neutral-600: oklch(0.38 0.007 346);
+  --color-neutral-700: oklch(0.28 0.006 346);
+  --color-neutral-800: oklch(0.19 0.005 346);
+  --color-neutral-900: oklch(0.12 0.004 346);
+  --color-neutral-950: oklch(0.06 0.003 346);
 
   /* === Color: Surface (elevation levels) === */
   --color-surface: oklch(1 0 0);
@@ -46,9 +57,9 @@
   --color-surface-overlay: oklch(0.98 0.003 65);
 
   /* === Color: Semantic === */
-  --color-success: oklch(0.70 0.16 145);
+  --color-success: oklch(0.7 0.16 145);
   --color-success-light: oklch(0.92 0.06 145);
-  --color-error: oklch(0.58 0.20 20);
+  --color-error: oklch(0.58 0.2 20);
   --color-error-light: oklch(0.93 0.06 20);
   --color-warning: oklch(0.75 0.16 85);
   --color-warning-light: oklch(0.95 0.08 85);
@@ -58,8 +69,8 @@
   /* === Typography === */
   --font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-devanagari: 'Noto Sans Devanagari', ui-sans-serif, system-ui,
-    sans-serif;
+  --font-devanagari:
+    'Noto Sans Devanagari', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
 
   /* === Type Scale (1.25 ratio — Major Third) === */
@@ -114,7 +125,7 @@
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.04);
   --shadow-md: 0 4px 12px -2px oklch(0 0 0 / 0.06);
   --shadow-lg: 0 10px 30px -5px oklch(0 0 0 / 0.08);
-  --shadow-xl: 0 20px 50px -10px oklch(0 0 0 / 0.10);
+  --shadow-xl: 0 20px 50px -10px oklch(0 0 0 / 0.1);
 
   /* === Interactive === */
   --animate-fade-in: fade-in 0.3s ease-out;
@@ -138,7 +149,7 @@
   *,
   *::before,
   *::after {
-    border-color: oklch(0.85 0.007 65); /* --color-neutral-200 */
+    border-color: oklch(0.85 0.007 346); /* --color-neutral-200 */
   }
 
   html {
@@ -146,7 +157,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'calt' 1;
   }
 
   body {
@@ -204,7 +218,7 @@
 
   /* Selection */
   ::selection {
-    background-color: oklch(0.82 0.09 65 / 0.3);
+    background-color: oklch(0.85 0.05 346 / 0.3);
     color: var(--color-neutral-900);
   }
 
@@ -297,6 +311,48 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* UI Polish Utilities */
+  .glass-panel {
+    background: oklch(1 0 0 / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.85 0.05 346 / 0.4);
+  }
+
+  .hover-lift {
+    transition:
+      transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Editorial marquee (weave strip) */
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee:hover {
+    animation-play-state: paused;
+  }
+
+  /* Zari hairline — thin gold rule used as a section divider */
+  .rule-gold {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-gold-400) 20%,
+      var(--color-gold-400) 80%,
+      transparent
+    );
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -331,6 +387,15 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Search, ShoppingCart, Heart, User, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Logo } from '@/components/layout/Logo'
 
 const navLinks = [
   { label: 'Silk', href: '/category/silk' },
@@ -18,20 +19,16 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-sticky border-b border-neutral-200 bg-surface/95 backdrop-blur-md">
+    <header className="z-sticky glass-panel sticky top-0">
       {/* Announcement */}
-      <div className="bg-brand-600 px-4 py-2 text-center font-body text-xs text-white">
+      <div className="bg-brand-600 font-body px-4 py-2 text-center text-xs text-white">
         Free shipping on orders above ₹999 &nbsp;·&nbsp; Easy 7-day returns
       </div>
 
       <div className="container-page">
         <div className="flex h-15 items-center justify-between gap-6">
           {/* Logo */}
-          <Link href="/" className="shrink-0">
-            <span className="font-display text-xl font-semibold tracking-tight text-neutral-900">
-              Shagya
-            </span>
-          </Link>
+          <Logo wordmarkClassName="text-neutral-900" />
 
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-1 lg:flex">
@@ -39,7 +36,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-3 py-2 font-body text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700"
+                className="font-body hover:text-brand-700 after:bg-brand-600 relative rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:transition-transform hover:after:scale-x-100"
               >
                 {link.label}
               </Link>
@@ -52,7 +49,7 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-1">
             <button
-              className="rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700"
+              className="hover:text-brand-700 rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
@@ -60,7 +57,7 @@ export function Header() {
 
             <Link
               href="/account"
-              className="hidden rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700 sm:inline-flex"
+              className="hover:text-brand-700 hidden rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 sm:inline-flex"
               aria-label="Account"
             >
               <User className="h-5 w-5" />
@@ -68,7 +65,7 @@ export function Header() {
 
             <Link
               href="/wishlist"
-              className="hidden rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700 sm:inline-flex"
+              className="hover:text-brand-700 hidden rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 sm:inline-flex"
               aria-label="Wishlist"
             >
               <Heart className="h-5 w-5" />
@@ -76,11 +73,11 @@ export function Header() {
 
             <Link
               href="/cart"
-              className="relative rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700"
+              className="hover:text-brand-700 relative rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
               aria-label="Cart"
             >
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-brand-600 font-body text-[10px] font-semibold text-white">
+              <span className="bg-brand-600 font-body absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[10px] font-semibold text-white">
                 0
               </span>
             </Link>
@@ -103,9 +100,7 @@ export function Header() {
         <div
           className={cn(
             'overflow-hidden transition-all duration-200 lg:hidden',
-            mobileMenuOpen
-              ? 'max-h-96 border-t border-neutral-200'
-              : 'max-h-0',
+            mobileMenuOpen ? 'max-h-96 border-t border-neutral-200' : 'max-h-0',
           )}
         >
           <nav className="flex flex-col gap-0.5 px-2 py-3">
@@ -113,7 +108,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-3 py-2.5 font-body text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-brand-700"
+                className="font-body hover:text-brand-700 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
@@ -122,14 +117,14 @@ export function Header() {
             <hr className="my-2 border-neutral-200" />
             <Link
               href="/account"
-              className="rounded-lg px-3 py-2.5 font-body text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
+              className="font-body rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
               onClick={() => setMobileMenuOpen(false)}
             >
               My Account
             </Link>
             <Link
               href="/wishlist"
-              className="rounded-lg px-3 py-2.5 font-body text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
+              className="font-body rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
               onClick={() => setMobileMenuOpen(false)}
             >
               Wishlist

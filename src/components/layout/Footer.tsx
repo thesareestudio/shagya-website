@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Logo } from '@/components/layout/Logo'
 
 const footerLinks = {
   shop: {
@@ -44,17 +45,12 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-neutral-200 bg-neutral-50">
-      <div className="container-page py-16">
+    <footer className="border-t border-neutral-200 bg-neutral-50/50">
+      <div className="container-page py-20">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
-            <Link
-              href="/"
-              className="font-display text-lg font-semibold tracking-tight text-neutral-900"
-            >
-              Shagya
-            </Link>
+            <Logo wordmarkClassName="text-neutral-900" className="h-8 w-8" />
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-neutral-500">
               Handcrafted Indian sarees, woven with tradition. Premium silk,
               cotton, and designer sarees delivered to your doorstep.
@@ -64,7 +60,7 @@ export function Footer() {
           {/* Links */}
           {Object.values(footerLinks).map((section) => (
             <div key={section.title}>
-              <h3 className="mb-3 font-display text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+              <h3 className="font-display mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
                 {section.title}
               </h3>
               <ul className="space-y-2.5">
@@ -72,7 +68,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-neutral-600 transition-colors hover:text-brand-700"
+                      className="hover:text-brand-700 text-sm text-neutral-600 transition-colors"
                     >
                       {link.label}
                     </Link>

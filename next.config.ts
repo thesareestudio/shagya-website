@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
 
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'placehold.co' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
+  },
+
   async headers() {
     return [
       {
