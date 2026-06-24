@@ -234,8 +234,105 @@ describe('Products collection', () => {
       expect(field?.type).toBe('text')
     })
 
-    it('has exactly 13 fields in total', () => {
-      expect(Products.fields).toHaveLength(13)
+    it('has exactly 23 fields in total', () => {
+      expect(Products.fields).toHaveLength(23)
+    })
+  })
+
+  describe('Pricing fields', () => {
+    it('has basePrice number field (required, min=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'basePrice',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.required).toBe(true)
+      expect(field?.min).toBe(0)
+    })
+
+    it('has compareAtPrice number field (optional, min=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'compareAtPrice',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.min).toBe(0)
+    })
+
+    it('has costPrice number field (optional, min=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'costPrice',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.min).toBe(0)
+    })
+
+    it('has gstPercent number field (default=5)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'gstPercent',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.defaultValue).toBe(5)
+    })
+
+    it('has shippingPrice number field (optional, min=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'shippingPrice',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.min).toBe(0)
+    })
+  })
+
+  describe('Inventory fields', () => {
+    it('has trackQuantity checkbox field (default=false)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'trackQuantity',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('checkbox')
+      expect(field?.defaultValue).toBe(false)
+    })
+
+    it('has quantity number field (min=0, default=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'quantity',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.min).toBe(0)
+      expect(field?.defaultValue).toBe(0)
+    })
+
+    it('has lowStockThreshold number field (default=5, min=0)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'lowStockThreshold',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('number')
+      expect(field?.defaultValue).toBe(5)
+      expect(field?.min).toBe(0)
+    })
+
+    it('has allowBackorder checkbox field (default=false)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'allowBackorder',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('checkbox')
+      expect(field?.defaultValue).toBe(false)
+    })
+
+    it('has soldIndividually checkbox field (default=false)', () => {
+      const field = Products.fields?.find(
+        (f: any) => f.name === 'soldIndividually',
+      ) as any
+      expect(field).toBeDefined()
+      expect(field?.type).toBe('checkbox')
+      expect(field?.defaultValue).toBe(false)
     })
   })
 })

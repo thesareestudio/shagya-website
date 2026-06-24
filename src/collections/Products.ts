@@ -125,6 +125,59 @@ export const Products: CollectionConfig = {
       name: 'occasion',
       type: 'text',
     },
+    {
+      name: 'basePrice',
+      type: 'number',
+      required: true,
+      min: 0,
+    },
+    {
+      name: 'compareAtPrice',
+      type: 'number',
+      min: 0,
+    },
+    {
+      name: 'costPrice',
+      type: 'number',
+      min: 0,
+    },
+    {
+      name: 'gstPercent',
+      type: 'number',
+      defaultValue: 5,
+    },
+    {
+      name: 'shippingPrice',
+      type: 'number',
+      min: 0,
+    },
+    {
+      name: 'trackQuantity',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'quantity',
+      type: 'number',
+      min: 0,
+      defaultValue: 0,
+    },
+    {
+      name: 'lowStockThreshold',
+      type: 'number',
+      min: 0,
+      defaultValue: 5,
+    },
+    {
+      name: 'allowBackorder',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'soldIndividually',
+      type: 'checkbox',
+      defaultValue: false,
+    },
   ],
   timestamps: true,
 }
