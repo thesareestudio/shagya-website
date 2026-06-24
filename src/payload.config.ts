@@ -16,6 +16,7 @@ import { Collections } from './collections/Collections'
 import { Variants } from './collections/Variants'
 import { Orders } from './collections/Orders'
 import { Customers } from './collections/Customers'
+import { Media } from './collections/Media'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -58,7 +59,7 @@ export default buildConfig({
     Variants,
     Orders,
     Customers,
-    // Media collection (Phase 2+)
+    Media,
   ],
 
   // ---------------------------------------------------------------------------
