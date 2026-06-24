@@ -41,13 +41,14 @@ export const Users: CollectionConfig = {
       required: true,
       defaultValue: 'editor',
       options: [
+        { label: 'Super Admin', value: 'super-admin' },
         { label: 'Admin', value: 'admin' },
         { label: 'Editor', value: 'editor' },
         { label: 'Content Manager', value: 'content-manager' },
       ],
       access: {
-        // Only admins can change roles
-        update: ({ req: { user } }) => user?.role === 'admin',
+        // Only super-admin can change roles
+        update: ({ req: { user } }) => user?.role === 'super-admin',
       },
     },
   ],
