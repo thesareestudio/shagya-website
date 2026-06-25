@@ -198,19 +198,9 @@ export async function seedPages(payload: Payload): Promise<void> {
           title: page.title,
           status: page.status,
           template: page.template,
-          content: [
-            heroBlock(
-              page.title === 'Home' ? 'Welcome to Shagya' : page.title,
-              page.title === 'Home'
-                ? 'Discover timeless Indian sarees, handcrafted with love.'
-                : undefined,
-            ),
-          ],
+          content: [heroBlock(page.heroHeading, page.heroSubheading)],
           metaTitle: `${page.title} — Shagya`,
-          metaDescription:
-            page.title === 'Home'
-              ? 'Shagya — Timeless Indian sarees crafted with love. Explore our curated collection of handloom, silk, and designer sarees.'
-              : `${page.title} page for Shagya, your destination for exquisite Indian sarees.`,
+          metaDescription: page.heroSubheading,
         },
         overrideAccess: true,
       })
@@ -313,7 +303,7 @@ export async function seedBlogPosts(payload: Payload): Promise<void> {
           status: post.status,
           excerpt: post.excerpt,
           author: authorId,
-          content: lexicalRichText(post.excerpt),
+          content: lexicalRichText(post.body),
           publishedAt: new Date().toISOString(),
         },
         overrideAccess: true,
