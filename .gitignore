@@ -48,3 +48,10 @@ src/payload-types.ts
 # opencode
 opencode.json
 .vercel
+
+# Dummy images — generated via seed script or picsum.photos
+public/images/products/
+public/images/hero/
+public/images/blogs/
+public/images/avatars/
+public/images/screenshots/
