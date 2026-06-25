@@ -25,6 +25,7 @@ import { Tags } from './collections/Tags'
 import { Brands } from './collections/Brands'
 import { FabricTypes } from './collections/FabricTypes'
 import { Occasions } from './collections/Occasions'
+import { SiteSettings } from './globals/SiteSettings'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -81,9 +82,7 @@ export default buildConfig({
   // ---------------------------------------------------------------------------
   // Globals
   // ---------------------------------------------------------------------------
-  globals: [
-    // Site Settings (Phase 2)
-  ],
+  globals: [SiteSettings],
 
   // ---------------------------------------------------------------------------
   // Database — PostgreSQL 18 via Neon
