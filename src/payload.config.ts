@@ -30,6 +30,7 @@ import { Brands } from './collections/Brands'
 import { FabricTypes } from './collections/FabricTypes'
 import { Occasions } from './collections/Occasions'
 import { Wishlist } from './collections/Wishlist'
+import { Navigation } from './collections/Navigation'
 import { SiteSettings } from './globals/SiteSettings'
 import sharp from 'sharp'
 import path from 'path'
@@ -223,6 +224,7 @@ export default buildConfig({
     FabricTypes,
     Occasions,
     EventLogs,
+    Navigation,
     Wishlist,
     Posts,
   ],
