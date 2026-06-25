@@ -31,6 +31,8 @@ import { FabricTypes } from './collections/FabricTypes'
 import { Occasions } from './collections/Occasions'
 import { Wishlist } from './collections/Wishlist'
 import { Navigation } from './collections/Navigation'
+import { Forms } from './collections/Forms'
+import { FormSubmissions } from './collections/FormSubmissions'
 import { SiteSettings } from './globals/SiteSettings'
 import sharp from 'sharp'
 import path from 'path'
@@ -227,6 +229,8 @@ export default buildConfig({
     Navigation,
     Wishlist,
     Posts,
+    Forms,
+    FormSubmissions,
   ],
 
   // ---------------------------------------------------------------------------
