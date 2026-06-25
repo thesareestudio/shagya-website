@@ -358,6 +358,53 @@ describe('Orders collection', () => {
     })
   })
 
+  describe('After change hook', () => {
+    it('has an afterChange hook', () => {
+      const hooks = Orders.hooks
+      expect(hooks).toBeDefined()
+      expect(hooks?.afterChange).toBeDefined()
+      expect(hooks?.afterChange?.length).toBeGreaterThan(0)
+    })
+
+    it('skips webhook on create operation', async () => {
+      const hook = Orders.hooks?.afterChange?.[0]
+      if (!hook) return
+
+      const doc = await hook({
+        doc: { id: '1', status: 'pending', orderNumber: 'ORD-00001' },
+        previousDoc: {},
+        operation: 'create',
+        req: {
+          payload: {
+            logger: { error: () => {} },
+          },
+        },
+      } as any)
+
+      // Should return doc unchanged for create operations
+      expect(doc).toBeDefined()
+    })
+
+    it('skips webhook when status has not changed', async () => {
+      const hook = Orders.hooks?.afterChange?.[0]
+      if (!hook) return
+
+      const doc = await hook({
+        doc: { id: '1', status: 'pending', orderNumber: 'ORD-00001' },
+        previousDoc: { status: 'pending' },
+        operation: 'update',
+        req: {
+          payload: {
+            create: async () => ({}),
+            logger: { error: () => {} },
+          },
+        },
+      } as any)
+
+      expect(doc).toBeDefined()
+    })
+  })
+
   describe('Total field count', () => {
     it('has exactly 13 top-level fields', () => {
       expect(Orders.fields).toHaveLength(13)

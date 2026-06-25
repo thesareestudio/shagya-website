@@ -16,6 +16,7 @@ import { Categories } from './collections/Categories'
 import { Collections } from './collections/Collections'
 import { Variants } from './collections/Variants'
 import { Orders } from './collections/Orders'
+import { EventLogs } from './collections/EventLogs'
 import { Customers } from './collections/Customers'
 import { Addresses } from './collections/Addresses'
 import { Coupons } from './collections/Coupons'
@@ -114,6 +115,7 @@ export default buildConfig({
     Brands,
     FabricTypes,
     Occasions,
+    EventLogs,
   ],
 
   // ---------------------------------------------------------------------------

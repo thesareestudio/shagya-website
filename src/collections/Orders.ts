@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { sendWebhook } from '@/lib/webhooks'
 
 const addressGroup = {
   name: 'address',
@@ -73,6 +74,65 @@ export const Orders: CollectionConfig = {
           }
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        // Only fire webhooks on status changes during updates
+        if (operation !== 'update') return doc
+
+        const prevStatus = (previousDoc as Record<string, unknown> | undefined)
+          ?.status as string | undefined
+        const newStatus = (doc as Record<string, unknown>).status as
+          | string
+          | undefined
+
+        if (!newStatus || prevStatus === newStatus) return doc
+
+        const orderId = (doc as Record<string, unknown>).orderNumber as string
+        const webhookUrl = process.env.WEBHOOK_URL
+
+        const payload: Record<string, unknown> = {
+          event: 'order.status_changed',
+          orderId,
+          previousStatus: prevStatus ?? null,
+          newStatus,
+          order: {
+            orderNumber: (doc as Record<string, unknown>).orderNumber,
+            customerEmail: (doc as Record<string, unknown>).customerEmail,
+            status: newStatus,
+            total: (doc as Record<string, unknown>).total,
+            updatedAt: (doc as Record<string, unknown>).updatedAt,
+          },
+        }
+
+        let webhookResult = null
+
+        if (webhookUrl) {
+          webhookResult = await sendWebhook(webhookUrl, payload)
+        }
+
+        // Always log the event to the audit trail
+        try {
+          await req.payload.create({
+            collection: 'event-logs',
+            data: {
+              event: 'order.status_changed',
+              orderId,
+              status: newStatus,
+              payload,
+              response: webhookResult ?? {
+                note: 'WEBHOOK_URL not configured — skipped',
+              },
+            },
+          } as any)
+        } catch (err) {
+          req.payload.logger.error(
+            `[orders.afterChange] Failed to create EventLog: ${String(err)}`,
+          )
+        }
+
+        return doc
       },
     ],
   },
