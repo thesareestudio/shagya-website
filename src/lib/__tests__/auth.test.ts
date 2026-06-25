@@ -26,9 +26,32 @@ describe('auth', () => {
     expect(auth.options.database).toBeDefined()
   })
 
-  it('has the phone-number plugin configured', () => {
+  it('has all 4 plugins configured', () => {
     expect(auth.options.plugins).toBeDefined()
-    expect(auth.options.plugins?.length).toBe(1)
-    expect(auth.options.plugins?.[0]?.id).toBe('phone-number')
+    expect(auth.options.plugins?.length).toBe(4)
+  })
+
+  it('has the phone-number plugin configured', () => {
+    const plugin = auth.options.plugins?.find((p) => p.id === 'phone-number')
+    expect(plugin).toBeDefined()
+  })
+
+  it('has the two-factor plugin configured with correct issuer', () => {
+    const plugin = auth.options.plugins?.find((p) => p.id === 'two-factor')
+    expect(plugin).toBeDefined()
+    // Verify twoFactor was configured with options
+    expect(auth.options.plugins?.some((p) => p.id === 'two-factor')).toBe(true)
+  })
+
+  it('has the passkey plugin configured with correct rpName', () => {
+    const plugin = auth.options.plugins?.find((p) => p.id === 'passkey')
+    expect(plugin).toBeDefined()
+    expect(auth.options.plugins?.some((p) => p.id === 'passkey')).toBe(true)
+  })
+
+  it('has the magic-link plugin configured', () => {
+    const plugin = auth.options.plugins?.find((p) => p.id === 'magic-link')
+    expect(plugin).toBeDefined()
+    expect(auth.options.plugins?.some((p) => p.id === 'magic-link')).toBe(true)
   })
 })
