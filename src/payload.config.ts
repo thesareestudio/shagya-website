@@ -21,6 +21,10 @@ import { Coupons } from './collections/Coupons'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Reviews } from './collections/Reviews'
+import { Tags } from './collections/Tags'
+import { Brands } from './collections/Brands'
+import { FabricTypes } from './collections/FabricTypes'
+import { Occasions } from './collections/Occasions'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -68,6 +72,10 @@ export default buildConfig({
     Media,
     Pages,
     Reviews,
+    Tags,
+    Brands,
+    FabricTypes,
+    Occasions,
   ],
 
   // ---------------------------------------------------------------------------
