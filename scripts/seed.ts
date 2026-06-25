@@ -290,6 +290,14 @@ export async function seedBrands(payload: Payload): Promise<void> {
 export async function seedBlogPosts(payload: Payload): Promise<void> {
   console.log(`\n📝 Seeding ${blogPosts.length} blog posts...`)
 
+  // Get the admin user as the blog author
+  const adminUsers = await payload.find({
+    collection: 'users',
+    where: { email: { equals: adminUser.email } },
+    overrideAccess: true,
+  })
+  const authorId = adminUsers.docs[0]?.id
+
   for (const post of blogPosts) {
     const existing = await (payload.find as any)({
       collection: 'posts',
@@ -304,9 +312,9 @@ export async function seedBlogPosts(payload: Payload): Promise<void> {
           title: post.title,
           status: post.status,
           excerpt: post.excerpt,
+          author: authorId,
           content: lexicalRichText(post.excerpt),
           publishedAt: new Date().toISOString(),
-          imagePath: post.imagePath,
         },
         overrideAccess: true,
       })
