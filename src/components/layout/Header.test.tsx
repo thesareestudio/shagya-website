@@ -1,12 +1,48 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Header } from './Header'
 
+vi.mock('@/lib/auth-client', () => ({
+  useSession: () => ({ data: null, isPending: false }),
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}))
+
+vi.stubGlobal(
+  'fetch',
+  vi.fn((url: string) =>
+    Promise.resolve({
+      ok: true,
+      json: () => {
+        if (url.includes('/api/wishlist')) {
+          return Promise.resolve({ items: [] })
+        }
+        return Promise.resolve({
+          announcementBar: {
+            enabled: true,
+            text: 'Free shipping on orders above ₹999 · Easy 7-day returns',
+          },
+        })
+      },
+    }),
+  ),
+)
+
 describe('Header', () => {
-  it('renders the announcement bar', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders the announcement bar', async () => {
     render(<Header />)
-    expect(screen.getByText(/free shipping/i)).toBeInTheDocument()
+    expect(await screen.findByText(/free shipping/i)).toBeInTheDocument()
   })
 
   it('renders the brand logo', () => {
@@ -17,7 +53,6 @@ describe('Header', () => {
 
   it('renders all desktop nav links', () => {
     render(<Header />)
-    // Links appear in both desktop nav and mobile nav, so use getAllByRole
     const expected = [
       { name: 'Silk', href: '/category/silk' },
       { name: 'Cotton', href: '/category/cotton' },
@@ -37,20 +72,18 @@ describe('Header', () => {
   it('renders action buttons (search, account, wishlist, cart)', () => {
     render(<Header />)
     expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument()
-    // Account appears as an icon link and a "My Account" mobile nav link
     expect(
       screen.getAllByRole('link', { name: /account|my account/i }).length,
     ).toBeGreaterThan(0)
-    // Wishlist also appears twice (desktop + mobile)
     expect(
       screen.getAllByRole('link', { name: /wishlist/i }).length,
     ).toBeGreaterThan(0)
-    expect(screen.getByRole('link', { name: /cart/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^cart$/i })).toBeInTheDocument()
   })
 
-  it('shows cart count of zero by default', () => {
+  it('shows no cart count badge by default (zero count)', () => {
     render(<Header />)
-    expect(screen.getByText('0')).toBeInTheDocument()
+    expect(screen.queryByText('0')).not.toBeInTheDocument()
   })
 
   it('toggles mobile menu when menu button is clicked', async () => {

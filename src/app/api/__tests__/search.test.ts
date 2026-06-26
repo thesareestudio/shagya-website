@@ -3,11 +3,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // ---------------------------------------------------------------------------
 // Mocks — must be declared before any imports
 // ---------------------------------------------------------------------------
-const mockFind = vi.fn()
+
+// Mock the Drizzle sql template tag — just returns the strings array
+vi.mock('@payloadcms/db-postgres/drizzle', () => ({
+  sql: (strings: TemplateStringsArray, ...values: unknown[]) => ({
+    strings,
+    values,
+    __isRawQuery: true,
+  }),
+}))
 
 vi.mock('@payload-config', () => ({
   default: {},
 }))
+
+const mockExecute = vi.fn()
 
 vi.mock('payload', async (importOriginal) => {
   const actual: Record<string, unknown> =
@@ -16,7 +26,11 @@ vi.mock('payload', async (importOriginal) => {
     ...actual,
     getPayload: vi.fn(() =>
       Promise.resolve({
-        find: mockFind,
+        db: {
+          drizzle: {
+            execute: mockExecute,
+          },
+        },
       }),
     ),
   }
@@ -30,42 +44,57 @@ beforeEach(async () => {
   GET_search = mod.GET
 })
 
-/**
- * Helper: create mock search-collection docs with populated doc.value.
- */
-function mockSearchDoc(value: Record<string, unknown>) {
+function mockProductRow(overrides: Partial<Record<string, unknown>> = {}) {
   return {
-    id: 'search-1',
-    title: 'Test Result',
-    priority: 0,
-    doc: {
-      relationTo: 'products',
-      value,
-    },
+    id: 1,
+    type: 'product',
+    name: 'Banarasi Silk Saree',
+    slug: 'banarasi-silk-saree',
+    title: null,
+    excerpt: null,
+    base_price: 15000,
+    compare_at_price: null,
+    fabric: 'silk',
+    weave: 'banarasi',
+    featured_image_id: null,
+    rank: 0.35,
+    ...overrides,
+  }
+}
+
+function mockPostRow(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: 5,
+    type: 'post',
+    name: null,
+    slug: 'saree-care-guide',
+    title: 'Saree Care Guide',
+    excerpt: 'How to care for silks',
+    base_price: null,
+    compare_at_price: null,
+    fabric: null,
+    weave: null,
+    featured_image_id: null,
+    rank: 0.2,
+    ...overrides,
   }
 }
 
 describe('GET /api/search', () => {
-  it('returns matching results from the search plugin collection', async () => {
-    // First call: search collection
-    mockFind.mockResolvedValueOnce({
-      docs: [
-        mockSearchDoc({
-          id: 1,
-          name: 'Banarasi Silk Saree',
-          status: 'published',
-        }),
-        mockSearchDoc({
-          id: 2,
-          name: 'Silk Cotton Blend',
-          status: 'published',
-        }),
-      ],
-      totalDocs: 2,
-      page: 1,
-      totalPages: 1,
-      limit: 20,
-    })
+  it('returns matching FTS results with product type', async () => {
+    mockExecute.mockResolvedValueOnce([
+      mockProductRow({
+        id: 1,
+        name: 'Banarasi Silk Saree',
+        base_price: 15000,
+      }),
+      mockProductRow({
+        id: 2,
+        name: 'Silk Cotton Blend',
+        base_price: 8000,
+        slug: 'silk-cotton-blend',
+      }),
+    ])
 
     const response = await GET_search(
       new Request('http://localhost/api/search?q=silk'),
@@ -74,69 +103,34 @@ describe('GET /api/search', () => {
 
     expect(response.status).toBe(200)
     expect(body.docs).toHaveLength(2)
+    expect(body.docs[0]).toHaveProperty('type', 'product')
     expect(body.docs[0]).toHaveProperty('name', 'Banarasi Silk Saree')
+    expect(body.docs[0]).toHaveProperty('basePrice', 15000)
     expect(body.docs[1]).toHaveProperty('name', 'Silk Cotton Blend')
+    expect(body.docs[0]).toHaveProperty('rank')
     expect(body.totalDocs).toBe(2)
   })
 
-  it('queries the search collection with title like operator', async () => {
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 1,
-      totalPages: 0,
-      limit: 20,
-    })
-    // Fallback queries (3 collections) — return empty
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
-
-    await GET_search(new Request('http://localhost/api/search?q=banarasi'))
-
-    // First call should be to the search collection
-    const searchCall = mockFind.mock.calls[0][0] as Record<string, unknown>
-    expect(searchCall.collection).toBe('search')
-    expect(searchCall.where).toEqual({ title: { like: 'banarasi' } })
-    expect(searchCall.sort).toBe('-priority')
-  })
-
-  it('falls back to direct collection queries when search collection returns empty', async () => {
-    // Search collection returns empty
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 1,
-      totalPages: 0,
-      limit: 20,
-    })
-    // Fallback: one collection returns results
-    mockFind.mockResolvedValueOnce({
-      docs: [{ id: 3, name: 'Handwoven Silk', status: 'published' }],
-      totalDocs: 1,
-    })
-    // Remaining fallback collections
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+  it('returns both product and post results', async () => {
+    mockExecute.mockResolvedValueOnce([
+      mockProductRow({ id: 1, name: 'Silk Saree' }),
+      mockPostRow({ id: 5, title: 'Saree Care Guide' }),
+    ])
 
     const response = await GET_search(
-      new Request('http://localhost/api/search?q=handwoven'),
+      new Request('http://localhost/api/search?q=saree'),
     )
     const body = await response.json()
 
     expect(response.status).toBe(200)
-    expect(body.docs).toHaveLength(1)
-    expect(body.docs[0]).toHaveProperty('name', 'Handwoven Silk')
+    expect(body.docs).toHaveLength(2)
+    expect(body.docs[0]).toHaveProperty('type', 'product')
+    expect(body.docs[1]).toHaveProperty('type', 'post')
+    expect(body.docs[1]).toHaveProperty('title', 'Saree Care Guide')
   })
 
-  it('returns empty array when no match found anywhere', async () => {
-    // Search collection returns empty
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 1,
-      totalPages: 0,
-      limit: 20,
-    })
-    // Fallback collections also return empty
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+  it('returns empty array when no FTS match found', async () => {
+    mockExecute.mockResolvedValueOnce([])
 
     const response = await GET_search(
       new Request('http://localhost/api/search?q=xyznonexistent'),
@@ -148,54 +142,28 @@ describe('GET /api/search', () => {
     expect(body.totalDocs).toBe(0)
   })
 
-  it('uses default pagination values', async () => {
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 1,
-      totalPages: 0,
-      limit: 20,
-    })
-    // Fallback
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+  it('respects limit query param', async () => {
+    mockExecute.mockResolvedValueOnce([])
 
-    await GET_search(new Request('http://localhost/api/search?q=test'))
+    await GET_search(new Request('http://localhost/api/search?q=test&limit=5'))
 
-    const searchCall = mockFind.mock.calls[0][0] as Record<string, unknown>
-    expect(searchCall.page).toBe(1)
-    expect(searchCall.limit).toBe(20)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
   })
 
-  it('respects page and limit query params', async () => {
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 3,
-      totalPages: 0,
-      limit: 5,
-    })
-    // Fallback
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+  it('clamps limit to max 100', async () => {
+    mockExecute.mockResolvedValueOnce([])
 
-    await GET_search(
-      new Request('http://localhost/api/search?q=test&page=3&limit=5'),
+    const response = await GET_search(
+      new Request('http://localhost/api/search?q=test&limit=500'),
     )
+    const body = await response.json()
 
-    const searchCall = mockFind.mock.calls[0][0] as Record<string, unknown>
-    expect(searchCall.page).toBe(3)
-    expect(searchCall.limit).toBe(5)
+    expect(response.status).toBe(200)
+    expect(body.limit).toBe(100)
   })
 
   it('sets Cache-Control headers', async () => {
-    mockFind.mockResolvedValueOnce({
-      docs: [],
-      totalDocs: 0,
-      page: 1,
-      totalPages: 0,
-      limit: 20,
-    })
-    // Fallback
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+    mockExecute.mockResolvedValueOnce([])
 
     const response = await GET_search(
       new Request('http://localhost/api/search?q=test'),
@@ -216,42 +184,40 @@ describe('GET /api/search', () => {
     expect(body.error).toBe('Missing search query parameter "q"')
   })
 
-  it('returns 500 when getPayload itself fails', async () => {
-    // This simulates a catastrophic failure in getPayload (not just find failing)
-    // Since we can't easily mock getPayload to throw, we verify graceful degradation:
-    // when both search collection and fallback queries fail, the route returns
-    // 200 with empty results (resilient behavior).
-    mockFind.mockRejectedValueOnce(new Error('Search collection error'))
-    mockFind.mockRejectedValue(new Error('Fallback error'))
+  it('returns 400 when q param is empty', async () => {
+    const response = await GET_search(
+      new Request('http://localhost/api/search?q='),
+    )
+
+    expect(response.status).toBe(400)
+  })
+
+  it('returns 500 when drizzle.execute fails', async () => {
+    mockExecute.mockRejectedValueOnce(new Error('DB connection lost'))
 
     const response = await GET_search(
       new Request('http://localhost/api/search?q=test'),
     )
     const body = await response.json()
 
-    // The route handles errors gracefully — returns empty results, not 500
-    expect(response.status).toBe(200)
-    expect(body.docs).toHaveLength(0)
-    expect(body.totalDocs).toBe(0)
+    expect(response.status).toBe(500)
+    expect(body.error).toBe('Internal Server Error')
   })
 
-  it('gracefully falls back when search collection is unavailable', async () => {
-    // Search collection throws (unavailable)
-    mockFind.mockRejectedValueOnce(new Error('Collection not found'))
-    // Fallback returns results from products
-    mockFind.mockResolvedValueOnce({
-      docs: [{ id: 1, name: 'Silk Saree', status: 'published' }],
-      totalDocs: 1,
-    })
-    // Remaining fallback collections return empty
-    mockFind.mockResolvedValue({ docs: [], totalDocs: 0 })
+  it('converts numeric fields from strings to numbers', async () => {
+    mockExecute.mockResolvedValueOnce([
+      mockProductRow({
+        base_price: '12500.50',
+        compare_at_price: '15000.00',
+      }),
+    ])
 
     const response = await GET_search(
       new Request('http://localhost/api/search?q=silk'),
     )
     const body = await response.json()
 
-    expect(response.status).toBe(200)
-    expect(body.docs).toHaveLength(1)
+    expect(body.docs[0].basePrice).toBe(12500.5)
+    expect(body.docs[0].compareAtPrice).toBe(15000)
   })
 })

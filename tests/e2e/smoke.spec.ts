@@ -1,15 +1,23 @@
-import { describe, it, expect } from 'vitest'
-import { test, expect as playwrightExpect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
+
+async function waitForHydration(page: Page) {
+  try {
+    await page.waitForSelector('body[data-hydrated="true"]', { timeout: 15000 })
+  } catch (e) {
+    console.warn('Hydration selector body[data-hydrated="true"] timed out.')
+  }
+}
 
 test.describe('Smoke', () => {
   test('homepage loads successfully', async ({ page }) => {
     const response = await page.goto('/')
-    playwrightExpect(response?.status() ?? 0).toBeLessThan(400)
+    expect(response?.status() ?? 0).toBeLessThan(400)
   })
 
   test('homepage renders brand', async ({ page }) => {
     await page.goto('/')
-    await playwrightExpect(
+    await waitForHydration(page)
+    await expect(
       page.getByRole('link', { name: /shagya/i }).first(),
     ).toBeVisible()
   })

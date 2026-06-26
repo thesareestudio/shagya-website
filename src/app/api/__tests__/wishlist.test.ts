@@ -1,9 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ---------------------------------------------------------------------------
-// Mock auth from @/lib/auth
+// Mocks — must be declared before any imports
 // ---------------------------------------------------------------------------
+const mockFind = vi.fn()
+const mockCreate = vi.fn()
+const mockUpdate = vi.fn()
 const mockGetSession = vi.fn()
+
+vi.mock('@payload-config', () => ({
+  default: {},
+}))
+
+vi.mock('payload', async (importOriginal) => {
+  const actual: Record<string, unknown> =
+    await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(() =>
+      Promise.resolve({
+        find: mockFind,
+        create: mockCreate,
+        update: mockUpdate,
+      }),
+    ),
+  }
+})
 
 vi.mock('@/lib/auth', () => ({
   auth: {
@@ -44,6 +66,12 @@ describe('GET /api/wishlist', () => {
       session: { id: 'session-1' },
     })
 
+    // Mock Payload calls
+    mockFind.mockResolvedValueOnce({
+      docs: [{ id: 'customer-1', email: 'test@example.com' }],
+    }) // customer
+    mockFind.mockResolvedValueOnce({ docs: [] }) // empty wishlist
+
     const response = await GET_wishlist(
       new Request('http://localhost/api/wishlist'),
     )
@@ -77,6 +105,19 @@ describe('POST /api/wishlist', () => {
       user: { id: 'user-1', email: 'test@example.com' },
       session: { id: 'session-1' },
     })
+
+    // Mock Payload calls
+    mockFind.mockResolvedValueOnce({
+      docs: [{ id: 'customer-1', email: 'test@example.com' }],
+    }) // customer
+    mockFind.mockResolvedValueOnce({
+      docs: [{ id: 'wishlist-1', customer: 'customer-1', items: [] }],
+    }) // wishlist
+    mockUpdate.mockResolvedValueOnce({
+      id: 'wishlist-1',
+      customer: 'customer-1',
+      items: [{ product: 42 }],
+    }) // update call
 
     const request = new Request('http://localhost/api/wishlist', {
       method: 'POST',
@@ -115,6 +156,21 @@ describe('DELETE /api/wishlist', () => {
       user: { id: 'user-1', email: 'test@example.com' },
       session: { id: 'session-1' },
     })
+
+    // Mock Payload calls
+    mockFind.mockResolvedValueOnce({
+      docs: [{ id: 'customer-1', email: 'test@example.com' }],
+    }) // customer
+    mockFind.mockResolvedValueOnce({
+      docs: [
+        { id: 'wishlist-1', customer: 'customer-1', items: [{ product: 42 }] },
+      ],
+    }) // wishlist
+    mockUpdate.mockResolvedValueOnce({
+      id: 'wishlist-1',
+      customer: 'customer-1',
+      items: [],
+    }) // update call (remove product)
 
     const request = new Request('http://localhost/api/wishlist', {
       method: 'DELETE',
