@@ -1,100 +1,11 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import Image from 'next/image'
 
-/* -------------------------------------------------------------------------- */
-/*  Static content — see docs/homepage-design.md                              */
-/* -------------------------------------------------------------------------- */
-
-/* placehold.co — brand-tinted placeholders (wine #69254e / gold #a97e34 /
-   cream #f5e8ee). Stand-ins until CMS product photography is wired in. */
 const ph = (w: number, h: number, bg: string, fg: string, text: string) =>
   `https://placehold.co/${w}x${h}/${bg}/${fg}?text=${encodeURIComponent(text)}&font=lora`
-
-const weaves = [
-  'Banarasi',
-  'Kanchipuram',
-  'Chanderi',
-  'Jamdani',
-  'Patola',
-  'Kanjivaram',
-  'Phulkari',
-  'Baluchari',
-  'Maheshwari',
-  'Ilkal',
-]
-
-const crafts = [
-  {
-    name: 'Silk',
-    count: '24 weaves',
-    region: 'Banaras · Kanchipuram',
-    href: '/category/silk',
-    img: ph(750, 1000, '69254e', 'f5e8ee', 'Silk'),
-  },
-  {
-    name: 'Cotton',
-    count: '18 weaves',
-    region: 'Chanderi · Maheshwari',
-    href: '/category/cotton',
-    img: ph(750, 1000, 'a97e34', 'fff8ec', 'Cotton'),
-  },
-  {
-    name: 'Handloom',
-    count: '31 weaves',
-    region: 'Jamdani · Ilkal',
-    href: '/category/handloom',
-    img: ph(750, 1000, '7a3a5d', 'f5e8ee', 'Handloom'),
-  },
-]
-
-const products = [
-  {
-    name: 'Banarasi Silk Saree',
-    region: 'Varanasi, UP',
-    price: '₹12,400',
-    href: '/product/banarasi-silk',
-    img: ph(600, 800, '69254e', 'f5e8ee', 'Banarasi Silk'),
-  },
-  {
-    name: 'Kanchipuram Silk',
-    region: 'Tamil Nadu',
-    price: '₹18,900',
-    href: '/product/kanchipuram-silk',
-    img: ph(600, 800, '5c1a3a', 'f5e8ee', 'Kanchipuram'),
-  },
-  {
-    name: 'Chanderi Cotton',
-    region: 'Madhya Pradesh',
-    price: '₹4,200',
-    href: '/product/chanderi-cotton',
-    img: ph(600, 800, 'a97e34', 'fff8ec', 'Chanderi'),
-  },
-  {
-    name: 'Jamdani Handloom',
-    region: 'West Bengal',
-    price: '₹7,650',
-    href: '/product/jamdani-handloom',
-    img: ph(600, 800, '8b2962', 'f5e8ee', 'Jamdani'),
-  },
-]
-
-const journal = [
-  {
-    title: 'How to tell a real Banarasi from a powerloom copy',
-    tag: 'Guide',
-    read: '6 min',
-  },
-  {
-    title: 'The last draw-boys of Varanasi',
-    tag: 'Field notes',
-    read: '9 min',
-  },
-]
-
-/* -------------------------------------------------------------------------- */
-/*  Small presentational helpers                                              */
-/* -------------------------------------------------------------------------- */
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -104,8 +15,6 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** Image-forward panel using placehold.co. Stand-in until CMS photos exist.
- *  Keeps a subtle woven-texture overlay + optional caption. */
 function ImagePanel({
   src,
   alt,
@@ -133,7 +42,7 @@ function ImagePanel({
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
         className="object-cover"
-        unoptimized
+        unoptimized={src.startsWith('https://placehold.co')}
         loading={loading ?? 'lazy'}
       />
       {/* woven-texture hint */}
@@ -160,11 +69,59 @@ function ImagePanel({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Page                                                                       */
-/* -------------------------------------------------------------------------- */
+export default async function HomePage() {
+  const payload = await getPayload({ config })
 
-export default function HomePage() {
+  // Query dynamic home page settings
+  const pageRes = await payload.find({
+    collection: 'pages',
+    where: { slug: { equals: 'home' } },
+    limit: 1,
+  })
+  const homeDoc = pageRes.docs[0]
+
+  const heroHeading =
+    homeDoc?.content?.[0]?.blockType === 'hero'
+      ? (homeDoc.content[0] as any).heading
+      : 'The art of the handwoven drape'
+
+  const heroSubheading =
+    homeDoc?.content?.[0]?.blockType === 'hero'
+      ? (homeDoc.content[0] as any).subheading
+      : 'Sarees woven on wooden looms across India — silk, cotton and heritage weaves, delivered from the maker to you.'
+
+  // Query products
+  const productsRes = await payload.find({
+    collection: 'products',
+    where: { status: { equals: 'published' } },
+    limit: 4,
+    sort: '-createdAt',
+  })
+  const dbProducts = productsRes.docs
+
+  // Query categories
+  const categoriesRes = await payload.find({
+    collection: 'categories',
+    limit: 3,
+  })
+  const dbCategories = categoriesRes.docs
+
+  // Query blog posts
+  const postsRes = await payload.find({
+    collection: 'posts',
+    where: { status: { equals: 'published' } },
+    limit: 2,
+    sort: '-publishedAt',
+  })
+  const dbPosts = postsRes.docs
+
+  // Fallbacks for category images
+  const categoryFallbackImages: Record<string, string> = {
+    silk: ph(750, 1000, '69254e', 'f5e8ee', 'Silk'),
+    cotton: ph(750, 1000, 'a97e34', 'fff8ec', 'Cotton'),
+    handloom: ph(750, 1000, '7a3a5d', 'f5e8ee', 'Handloom'),
+  }
+
   return (
     <div className="bg-surface">
       {/* ============================ HERO ============================ */}
@@ -174,11 +131,10 @@ export default function HomePage() {
           <div className="animate-slide-up lg:col-span-6">
             <Eyebrow>Est. — Handloom, Indian-made</Eyebrow>
             <h1 className="text-hero font-display mt-6 font-semibold tracking-tight text-neutral-900">
-              The art of the handwoven drape
+              {heroHeading}
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-neutral-600">
-              Sarees woven on wooden looms across India — silk, cotton and
-              heritage weaves, delivered from the maker to you.
+              {heroSubheading}
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
@@ -217,14 +173,30 @@ export default function HomePage() {
           {/* Editorial image */}
           <div className="lg:col-span-6">
             <div className="relative">
-              <ImagePanel
-                src={ph(800, 1000, '69254e', 'f5e8ee', 'Kanchipuram Silk')}
-                alt="A handwoven Kanchipuram silk saree in wine and gold"
-                caption="Kanchipuram silk"
-                region="Tamil Nadu"
-                className="aspect-[4/5] w-full shadow-xl"
-                loading="eager"
-              />
+              {dbProducts[0]?.gallery?.[0]?.image ? (
+                <ImagePanel
+                  src={
+                    typeof dbProducts[0].gallery[0].image === 'object'
+                      ? dbProducts[0].gallery[0].image.url ||
+                        '/images/placeholder.jpg'
+                      : '/images/placeholder.jpg'
+                  }
+                  alt={dbProducts[0].name}
+                  caption={dbProducts[0].name}
+                  region={dbProducts[0].weave}
+                  className="aspect-[4/5] w-full shadow-xl"
+                  loading="eager"
+                />
+              ) : (
+                <ImagePanel
+                  src={ph(800, 1000, '69254e', 'f5e8ee', 'Kanchipuram Silk')}
+                  alt="A handwoven Kanchipuram silk saree in wine and gold"
+                  caption="Kanchipuram silk"
+                  region="Tamil Nadu"
+                  className="aspect-[4/5] w-full shadow-xl"
+                  loading="eager"
+                />
+              )}
               {/* gold hairline frame accent */}
               <div className="rule-gold absolute -inset-x-3 -bottom-3 hidden h-px md:block" />
             </div>
@@ -239,7 +211,18 @@ export default function HomePage() {
       >
         <div className="overflow-hidden">
           <div className="marquee">
-            {[...weaves, ...weaves].map((w, i) => (
+            {[
+              'Banarasi',
+              'Kanchipuram',
+              'Chanderi',
+              'Jamdani',
+              'Patola',
+              'Kanjivaram',
+              'Phulkari',
+              'Baluchari',
+              'Maheshwari',
+              'Ilkal',
+            ].map((w, i) => (
               <span
                 key={`${w}-${i}`}
                 className="font-display flex items-center text-sm font-medium tracking-wide text-neutral-500"
@@ -273,32 +256,44 @@ export default function HomePage() {
         </div>
 
         <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
-          {crafts.map((c) => (
-            <Link
-              key={c.name}
-              href={c.href}
-              className="hover-lift group relative block overflow-hidden rounded-2xl"
-            >
-              <ImagePanel
-                src={c.img}
-                alt={`${c.name} sarees — ${c.region}`}
-                className="aspect-[3/4] w-full transition-transform duration-500 group-hover:scale-[1.03]"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-neutral-950/55 to-transparent p-5">
-                <div>
-                  <p className="font-display text-lg font-semibold text-white">
-                    {c.name}
-                  </p>
-                  <p className="font-body mt-0.5 text-xs text-white/80">
-                    {c.count} · {c.region}
-                  </p>
+          {dbCategories.slice(0, 3).map((cat) => {
+            const slug = cat.slug || cat.name.toLowerCase()
+            const img =
+              (cat.image && typeof cat.image === 'object'
+                ? cat.image.sizes?.card?.url || cat.image.url
+                : typeof cat.image === 'string'
+                  ? cat.image
+                  : null) ||
+              categoryFallbackImages[slug] ||
+              ph(750, 1000, '7a3a5d', 'f5e8ee', cat.name)
+
+            return (
+              <Link
+                key={cat.id}
+                href={`/category/${slug}`}
+                className="hover-lift group relative block overflow-hidden rounded-2xl"
+              >
+                <ImagePanel
+                  src={img}
+                  alt={`${cat.name} sarees`}
+                  className="aspect-[3/4] w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-neutral-950/55 to-transparent p-5">
+                  <div>
+                    <p className="font-display text-lg font-semibold text-white">
+                      {cat.name}
+                    </p>
+                    <p className="font-body mt-0.5 text-xs text-white/80">
+                      {cat.description || 'Explore our handwoven selection'}
+                    </p>
+                  </div>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors group-hover:bg-white/25">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
                 </div>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors group-hover:bg-white/25">
-                  <ArrowUpRight className="h-4 w-4" />
-                </span>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            )
+          })}
         </div>
       </section>
 
@@ -346,36 +341,65 @@ export default function HomePage() {
             </h2>
           </div>
           <Link
-            href="/new-arrivals"
+            href="/category/silk"
             className="group font-display text-brand-700 hover:text-brand-800 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
           >
-            View all new arrivals
+            View all sarees
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-          {products.map((p) => (
-            <Link key={p.href} href={p.href} className="hover-lift group block">
-              <ImagePanel
-                src={p.img}
-                alt={`${p.name} from ${p.region}`}
-                className="aspect-[3/4] w-full"
-                rounded="rounded-xl"
-              />
-              <div className="mt-4">
-                <p className="font-display text-base font-semibold text-neutral-900">
-                  {p.name}
-                </p>
-                <p className="font-body mt-0.5 text-xs text-neutral-500">
-                  {p.region}
-                </p>
-                <p className="text-brand-700 font-display mt-2 text-sm font-semibold">
-                  {p.price}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {dbProducts.slice(0, 4).map((p) => {
+            const imageUrl =
+              p.gallery?.[0]?.image && typeof p.gallery[0].image === 'object'
+                ? p.gallery[0].image.sizes?.card?.url || p.gallery[0].image.url
+                : ph(600, 800, '69254e', 'f5e8ee', p.name)
+
+            return (
+              <Link
+                key={p.id}
+                href={`/products/${p.slug}`}
+                className="group block"
+              >
+                <div className="relative overflow-hidden rounded-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md">
+                  <ImagePanel
+                    src={imageUrl || ''}
+                    alt={p.name}
+                    className="aspect-[3/4] w-full"
+                    rounded="none"
+                  />
+                </div>
+                <div className="mt-4 px-1">
+                  <p className="font-display group-hover:text-brand-700 text-base font-semibold text-neutral-900 transition-colors">
+                    {p.name}
+                  </p>
+                  <p className="font-body mt-0.5 text-xs text-neutral-500">
+                    {p.weave} · {p.fabric}
+                  </p>
+                  <div className="text-brand-700 font-display mt-2 flex flex-wrap items-baseline gap-2 text-sm font-semibold">
+                    <span>₹{p.basePrice.toLocaleString('en-IN')}</span>
+                    {p.compareAtPrice && p.compareAtPrice > p.basePrice && (
+                      <>
+                        <span className="text-xs font-normal text-neutral-400 line-through">
+                          ₹{p.compareAtPrice.toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-[11px] font-semibold text-green-600">
+                          (
+                          {Math.round(
+                            ((p.compareAtPrice - p.basePrice) /
+                              p.compareAtPrice) *
+                              100,
+                          )}
+                          % OFF)
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
@@ -420,10 +444,10 @@ export default function HomePage() {
               Worth knowing
             </h2>
             <ul className="mt-8 divide-y divide-neutral-200 border-y border-neutral-200">
-              {journal.map((post) => (
-                <li key={post.title}>
+              {dbPosts.map((post) => (
+                <li key={post.id}>
                   <Link
-                    href="/blog"
+                    href={`/blog/${post.slug}`}
                     className="group flex items-center justify-between gap-4 py-6 transition-colors"
                   >
                     <div>
@@ -431,7 +455,9 @@ export default function HomePage() {
                         {post.title}
                       </p>
                       <p className="font-body mt-1 text-xs text-neutral-500">
-                        {post.tag} · {post.read}
+                        {post.excerpt
+                          ? post.excerpt.substring(0, 80) + '...'
+                          : 'Read post'}
                       </p>
                     </div>
                     <ArrowUpRight className="group-hover:text-brand-700 h-5 w-5 shrink-0 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

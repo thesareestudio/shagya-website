@@ -101,16 +101,16 @@
   --text-headline: clamp(1.75rem, 3vw + 0.75rem, 3rem);
   --text-headline--line-height: 1.15;
 
-  /* === Spacing (4pt scale, semantic names) === */
-  --spacing-xs: 0.25rem; /* 4px */
-  --spacing-sm: 0.5rem; /* 8px */
-  --spacing-md: 0.75rem; /* 12px */
-  --spacing-base: 1rem; /* 16px */
-  --spacing-lg: 1.5rem; /* 24px */
-  --spacing-xl: 2rem; /* 32px */
-  --spacing-2xl: 3rem; /* 48px */
-  --spacing-3xl: 4rem; /* 64px */
-  --spacing-4xl: 6rem; /* 96px */
+  /* === Spacing (4pt scale, semantic names, prefixed to avoid Tailwind v4 scale clashes) === */
+  --spacing-sh-xs: 0.25rem; /* 4px */
+  --spacing-sh-sm: 0.5rem; /* 8px */
+  --spacing-sh-md: 0.75rem; /* 12px */
+  --spacing-sh-base: 1rem; /* 16px */
+  --spacing-sh-lg: 1.5rem; /* 24px */
+  --spacing-sh-xl: 2rem; /* 32px */
+  --spacing-sh-2xl: 3rem; /* 48px */
+  --spacing-sh-3xl: 4rem; /* 64px */
+  --spacing-sh-4xl: 6rem; /* 96px */
 
   /* === Border Radius === */
   --radius-sm: 0.25rem;
@@ -258,18 +258,18 @@
   .container-page {
     margin-inline: auto;
     max-width: 80rem;
-    padding-inline: var(--spacing-base);
+    padding-inline: var(--spacing-sh-base);
   }
 
   @media (width >= 40rem) {
     .container-page {
-      padding-inline: var(--spacing-lg);
+      padding-inline: var(--spacing-sh-lg);
     }
   }
 
   @media (width >= 64rem) {
     .container-page {
-      padding-inline: var(--spacing-xl);
+      padding-inline: var(--spacing-sh-xl);
     }
   }
 
@@ -412,4 +412,9 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Enforce sticky header z-index to stay on top of hoverable cards/images */
+.z-sticky {
+  z-index: 100 !important;
 }
