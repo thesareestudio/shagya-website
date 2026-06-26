@@ -52,7 +52,7 @@
   --color-neutral-950: oklch(0.06 0.003 346);
 
   /* === Color: Surface (elevation levels) === */
-  --color-surface: oklch(1 0 0);
+  --color-surface: oklch(0.99 0.004 346); /* Warmer than pure white */
   --color-surface-raised: oklch(0.99 0.002 65);
   --color-surface-overlay: oklch(0.98 0.003 65);
 
@@ -368,6 +368,27 @@
   }
 }
 
+/* Editorial filmstrip — slow horizontal scroll for weave photos */
+@keyframes filmstrip-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - var(--filmstrip-gap, 1rem) / 2));
+  }
+}
+
+.filmstrip-track {
+  display: flex;
+  width: max-content;
+  gap: var(--filmstrip-gap, 1rem);
+  animation: filmstrip-scroll var(--filmstrip-duration, 60s) linear infinite;
+}
+
+.filmstrip-track:hover {
+  animation-play-state: paused;
+}
+
 @keyframes slide-up {
   from {
     opacity: 0;
@@ -396,6 +417,28 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Progressive Enhancement: Scroll-driven reveals */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes scroll-reveal-up {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .scroll-reveal {
+      animation: scroll-reveal-up auto ease-out both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 15%;
+    }
   }
 }
 

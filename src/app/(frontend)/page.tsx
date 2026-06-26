@@ -45,7 +45,6 @@ function ImagePanel({
         unoptimized={src.startsWith('https://placehold.co')}
         loading={loading ?? 'lazy'}
       />
-      {/* woven-texture hint */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay"
         style={{
@@ -69,10 +68,96 @@ function ImagePanel({
   )
 }
 
+const WEAVES = [
+  {
+    name: 'Banarasi',
+    origin: 'Varanasi, UP',
+    color: '69254e',
+    textColor: 'f5e8ee',
+  },
+  {
+    name: 'Kanchipuram',
+    origin: 'Kanchipuram, TN',
+    color: '7a3a5d',
+    textColor: 'f5e8ee',
+  },
+  {
+    name: 'Chanderi',
+    origin: 'Chanderi, MP',
+    color: 'a97e34',
+    textColor: 'fff8ec',
+  },
+  {
+    name: 'Jamdani',
+    origin: 'Dhaka, Bengal',
+    color: '4a6b5d',
+    textColor: 'f0f5f1',
+  },
+  { name: 'Patola', origin: 'Patan, GJ', color: '8b3a3a', textColor: 'fdf2f0' },
+  { name: 'Phulkari', origin: 'Punjab', color: 'c47a4a', textColor: 'fff8ec' },
+  {
+    name: 'Baluchari',
+    origin: 'Murshidabad, WB',
+    color: '3a5a7a',
+    textColor: 'f0f5f8',
+  },
+  {
+    name: 'Maheshwari',
+    origin: 'Maheshwar, MP',
+    color: '5a7a5a',
+    textColor: 'f0f5f0',
+  },
+]
+
+function WeaveFilmstrip() {
+  return (
+    <section
+      aria-label="Weaves we carry"
+      className="bg-brand-50/40 border-y border-neutral-200 py-5"
+    >
+      <div className="overflow-hidden">
+        <div
+          className="filmstrip-track"
+          style={
+            {
+              '--filmstrip-gap': '1.25rem',
+              '--filmstrip-duration': '50s',
+            } as React.CSSProperties
+          }
+        >
+          {[...WEAVES, ...WEAVES].map((w, i) => (
+            <div
+              key={`${w.name}-${i}`}
+              className="relative flex h-24 w-40 shrink-0 items-end overflow-hidden rounded-lg sm:h-28 sm:w-48"
+            >
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: `#${w.color}` }}
+              />
+              <div
+                className="pointer-events-none absolute inset-0 opacity-20"
+                style={{
+                  backgroundImage:
+                    'repeating-linear-gradient(0deg, transparent 0 2px, oklch(1 0 0 / 0.1) 2px 4px), repeating-linear-gradient(90deg, transparent 0 2px, oklch(1 0 0 / 0.05) 2px 4px)',
+                }}
+              />
+              <div className="relative z-10 p-3">
+                <p className="font-display text-sm font-semibold text-white drop-shadow-sm">
+                  {w.name}
+                </p>
+                <p className="mt-0.5 text-xs text-white/70">{w.origin}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default async function HomePage() {
   const payload = await getPayload({ config })
 
-  // Query dynamic home page settings
   const pageRes = await payload.find({
     collection: 'pages',
     where: { slug: { equals: 'home' } },
@@ -90,7 +175,6 @@ export default async function HomePage() {
       ? (homeDoc.content[0] as any).subheading
       : 'Sarees woven on wooden looms across India — silk, cotton and heritage weaves, delivered from the maker to you.'
 
-  // Query products
   const productsRes = await payload.find({
     collection: 'products',
     where: { status: { equals: 'published' } },
@@ -99,14 +183,12 @@ export default async function HomePage() {
   })
   const dbProducts = productsRes.docs
 
-  // Query categories
   const categoriesRes = await payload.find({
     collection: 'categories',
     limit: 3,
   })
   const dbCategories = categoriesRes.docs
 
-  // Query blog posts
   const postsRes = await payload.find({
     collection: 'posts',
     where: { status: { equals: 'published' } },
@@ -115,7 +197,6 @@ export default async function HomePage() {
   })
   const dbPosts = postsRes.docs
 
-  // Fallbacks for category images
   const categoryFallbackImages: Record<string, string> = {
     silk: ph(750, 1000, '69254e', 'f5e8ee', 'Silk'),
     cotton: ph(750, 1000, 'a97e34', 'fff8ec', 'Cotton'),
@@ -125,35 +206,33 @@ export default async function HomePage() {
   return (
     <div className="bg-surface">
       {/* ============================ HERO ============================ */}
-      <section className="container-page pt-14 pb-20 md:pt-24 md:pb-32">
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
-          {/* Copy */}
-          <div className="animate-slide-up lg:col-span-6">
+      <section className="container-page pt-16 pb-24 md:pt-28 md:pb-40">
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
+          <div className="animate-slide-up max-w-xl lg:col-span-6">
             <Eyebrow>Est. — Handloom, Indian-made</Eyebrow>
             <h1 className="text-hero font-display mt-6 font-semibold tracking-tight text-neutral-900">
               {heroHeading}
             </h1>
-            <p className="mt-6 text-lg leading-relaxed text-neutral-600">
+            <p className="mt-6 max-w-[55ch] text-lg leading-relaxed text-neutral-600">
               {heroSubheading}
             </p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
               <Link
                 href="/category/silk"
-                className="hover-lift group bg-brand-600 hover:bg-brand-700 inline-flex h-13 items-center gap-2 rounded-xl px-7 text-base font-semibold text-white transition-colors active:scale-95"
+                className="bg-brand-600 hover:bg-brand-700 focus-visible:ring-brand-400 inline-flex h-13 items-center gap-2 rounded-xl px-7 text-base font-semibold text-white transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97]"
               >
                 Explore the shop
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/about"
-                className="inline-flex h-13 items-center gap-2 rounded-xl border border-neutral-300 bg-white px-7 text-base font-semibold text-neutral-800 transition-colors hover:border-neutral-400 hover:bg-neutral-50 active:scale-95"
+                className="group inline-flex items-center gap-2 text-base font-medium text-neutral-600 transition-colors hover:text-neutral-900"
               >
                 Our craft story
               </Link>
             </div>
 
-            {/* quiet proof line */}
-            <div className="mt-12 flex items-center gap-6 text-sm text-neutral-500">
+            <div className="mt-14 flex items-center gap-6 text-sm text-neutral-500">
               <span>
                 <span className="font-display font-semibold text-neutral-900">
                   6 clusters
@@ -167,10 +246,16 @@ export default async function HomePage() {
                 </span>{' '}
                 every piece
               </span>
+              <span className="hidden h-4 w-px bg-neutral-300 sm:block" />
+              <span className="hidden sm:inline">
+                <span className="font-display font-semibold text-neutral-900">
+                  10 weaves
+                </span>{' '}
+                and counting
+              </span>
             </div>
           </div>
 
-          {/* Editorial image */}
           <div className="lg:col-span-6">
             <div className="relative">
               {dbProducts[0]?.gallery?.[0]?.image ? (
@@ -197,48 +282,17 @@ export default async function HomePage() {
                   loading="eager"
                 />
               )}
-              {/* gold hairline frame accent */}
               <div className="rule-gold absolute -inset-x-3 -bottom-3 hidden h-px md:block" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ====================== WEAVE MARQUEE ====================== */}
-      <section
-        aria-label="Weaves we carry"
-        className="bg-brand-50/40 border-y border-neutral-200 py-5"
-      >
-        <div className="overflow-hidden">
-          <div className="marquee">
-            {[
-              'Banarasi',
-              'Kanchipuram',
-              'Chanderi',
-              'Jamdani',
-              'Patola',
-              'Kanjivaram',
-              'Phulkari',
-              'Baluchari',
-              'Maheshwari',
-              'Ilkal',
-            ].map((w, i) => (
-              <span
-                key={`${w}-${i}`}
-                className="font-display flex items-center text-sm font-medium tracking-wide text-neutral-500"
-              >
-                <span className="px-6">{w}</span>
-                <span className="text-gold-500" aria-hidden="true">
-                  ·
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ====================== WEAVE FILMSTRIP ====================== */}
+      <WeaveFilmstrip />
 
       {/* ====================== SHOP BY CRAFT ====================== */}
-      <section className="container-page py-20 md:py-28">
+      <section className="container-page scroll-reveal py-24 md:py-32">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <Eyebrow>Browse the collections</Eyebrow>
@@ -255,7 +309,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
           {dbCategories.slice(0, 3).map((cat) => {
             const slug = cat.slug || cat.name.toLowerCase()
             const img =
@@ -271,14 +325,15 @@ export default async function HomePage() {
               <Link
                 key={cat.id}
                 href={`/category/${slug}`}
-                className="hover-lift group relative block overflow-hidden rounded-2xl"
+                className="group relative block overflow-hidden rounded-2xl"
               >
                 <ImagePanel
                   src={img}
                   alt={`${cat.name} sarees`}
                   className="aspect-[3/4] w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                  rounded="rounded-2xl"
                 />
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-neutral-950/55 to-transparent p-5">
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-neutral-950/55 to-transparent p-6">
                   <div>
                     <p className="font-display text-lg font-semibold text-white">
                       {cat.name}
@@ -298,8 +353,8 @@ export default async function HomePage() {
       </section>
 
       {/* ====================== CRAFT STORY ====================== */}
-      <section className="border-y border-neutral-200 bg-neutral-50/60">
-        <div className="container-page grid items-center gap-10 py-20 md:py-28 lg:grid-cols-12 lg:gap-16">
+      <section className="scroll-reveal border-y border-neutral-200 bg-neutral-50/60">
+        <div className="container-page grid items-center gap-12 py-24 md:py-32 lg:grid-cols-12 lg:gap-20">
           <div className="lg:col-span-5">
             <ImagePanel
               src={ph(800, 800, '7a3a5d', 'f5e8ee', 'On the loom')}
@@ -314,12 +369,38 @@ export default async function HomePage() {
             <h2 className="text-headline font-display mt-4 font-semibold tracking-tight text-neutral-900">
               Six hands, one saree
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-neutral-600">
+            <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-neutral-600">
               A single Banarasi can take eighteen days and three artisans — the
               weaver, the border-maker, the draw-boy. We work directly with
               these clusters, so the hand that wove it is the hand that&apos;s
               paid for it.
             </p>
+            <div className="mt-6 grid grid-cols-3 gap-6 border-t border-neutral-200 pt-6">
+              <div>
+                <p className="font-display text-2xl font-semibold text-neutral-900">
+                  18
+                </p>
+                <p className="font-body mt-1 text-xs text-neutral-500">
+                  days per Banarasi
+                </p>
+              </div>
+              <div>
+                <p className="font-display text-2xl font-semibold text-neutral-900">
+                  3
+                </p>
+                <p className="font-body mt-1 text-xs text-neutral-500">
+                  artisans per saree
+                </p>
+              </div>
+              <div>
+                <p className="font-display text-2xl font-semibold text-neutral-900">
+                  6
+                </p>
+                <p className="font-body mt-1 text-xs text-neutral-500">
+                  weaving clusters
+                </p>
+              </div>
+            </div>
             <Link
               href="/blog"
               className="group font-display text-brand-700 hover:text-brand-800 mt-8 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
@@ -332,7 +413,7 @@ export default async function HomePage() {
       </section>
 
       {/* ====================== CURATED PICKS ====================== */}
-      <section className="container-page py-20 md:py-28">
+      <section className="container-page scroll-reveal py-24 md:py-32">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <Eyebrow>New this week</Eyebrow>
@@ -349,7 +430,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+        <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
           {dbProducts.slice(0, 4).map((p) => {
             const imageUrl =
               p.gallery?.[0]?.image && typeof p.gallery[0].image === 'object'
@@ -367,7 +448,7 @@ export default async function HomePage() {
                     src={imageUrl || ''}
                     alt={p.name}
                     className="aspect-[3/4] w-full"
-                    rounded="none"
+                    rounded="rounded-xl"
                   />
                 </div>
                 <div className="mt-4 px-1">
@@ -384,15 +465,6 @@ export default async function HomePage() {
                         <span className="text-xs font-normal text-neutral-400 line-through">
                           ₹{p.compareAtPrice.toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[11px] font-semibold text-green-600">
-                          (
-                          {Math.round(
-                            ((p.compareAtPrice - p.basePrice) /
-                              p.compareAtPrice) *
-                              100,
-                          )}
-                          % OFF)
-                        </span>
                       </>
                     )}
                   </div>
@@ -403,30 +475,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ====================== WINE FEATURE BAND ====================== */}
+      {/* ====================== PROMISE BAND ====================== */}
       <section className="bg-brand-950">
         <div className="rule-gold" />
-        <div className="container-page py-20 text-center md:py-28">
+        <div className="container-page py-24 text-center md:py-32">
           <Eyebrow>A note from Shagya</Eyebrow>
-          <h2 className="text-headline font-display mt-6 font-semibold tracking-tight text-white">
+          <h2 className="text-headline font-display mx-auto mt-6 max-w-3xl font-semibold tracking-tight text-white">
             Every saree is signed by its maker
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-neutral-300">
+          <p className="mx-auto mt-6 max-w-[55ch] text-lg leading-relaxed text-neutral-300">
             Handloom-verified. Maker-traced. No middleman markup, no warehouse
             mystery stock — just the cloth, the cluster it came from, and a fair
             price on both sides.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Link
               href="/category/silk"
-              className="group text-brand-800 hover:bg-gold-200 inline-flex h-13 items-center gap-2 rounded-xl bg-white px-7 text-base font-semibold transition-colors active:scale-95"
+              className="text-brand-800 hover:bg-gold-200 focus-visible:ring-gold-300 inline-flex h-13 items-center gap-2 rounded-xl bg-white px-7 text-base font-semibold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97]"
             >
               Begin browsing
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               href="/about"
-              className="inline-flex h-13 items-center rounded-xl border border-white/25 px-7 text-base font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/5 active:scale-95"
+              className="group inline-flex items-center gap-2 text-base font-medium text-neutral-300 transition-colors hover:text-white"
             >
               Meet the weavers
             </Link>
@@ -435,71 +507,78 @@ export default async function HomePage() {
       </section>
 
       {/* =================== JOURNAL + NEWSLETTER =================== */}
-      <section className="container-page py-20 md:py-28">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          {/* Journal */}
-          <div className="lg:col-span-7">
-            <Eyebrow>From the journal</Eyebrow>
-            <h2 className="text-headline font-display mt-4 font-semibold tracking-tight text-neutral-900">
-              Worth knowing
-            </h2>
-            <ul className="mt-8 divide-y divide-neutral-200 border-y border-neutral-200">
-              {dbPosts.map((post) => (
-                <li key={post.id}>
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="group flex items-center justify-between gap-4 py-6 transition-colors"
-                  >
-                    <div>
-                      <p className="font-display group-hover:text-brand-700 text-lg font-semibold text-neutral-900 transition-colors">
-                        {post.title}
-                      </p>
-                      <p className="font-body mt-1 text-xs text-neutral-500">
-                        {post.excerpt
-                          ? post.excerpt.substring(0, 80) + '...'
-                          : 'Read post'}
-                      </p>
-                    </div>
-                    <ArrowUpRight className="group-hover:text-brand-700 h-5 w-5 shrink-0 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <section className="scroll-reveal border-b border-neutral-200">
+        <div className="container-page py-24 md:py-32">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            {/* Journal */}
+            <div className="lg:col-span-7">
+              <Eyebrow>From the journal</Eyebrow>
+              <h2 className="text-headline font-display mt-4 font-semibold tracking-tight text-neutral-900">
+                Worth knowing
+              </h2>
+              <ul className="mt-10 divide-y divide-neutral-200 border-y border-neutral-200">
+                {dbPosts.map((post) => (
+                  <li key={post.id}>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="group flex items-center justify-between gap-4 py-6 transition-colors"
+                    >
+                      <div>
+                        <p className="font-display group-hover:text-brand-700 text-lg font-semibold text-neutral-900 transition-colors">
+                          {post.title}
+                        </p>
+                        <p className="font-body mt-1 text-xs text-neutral-500">
+                          {post.excerpt
+                            ? post.excerpt.substring(0, 90) + '...'
+                            : 'Read post'}
+                        </p>
+                      </div>
+                      <ArrowUpRight className="group-hover:text-brand-700 h-5 w-5 shrink-0 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Newsletter */}
-          <div className="lg:col-span-5">
-            <div className="bg-brand-50/70 rounded-2xl p-8 md:p-10">
-              <Eyebrow>Letters on craft</Eyebrow>
-              <h3 className="font-display mt-4 text-2xl font-semibold tracking-tight text-neutral-900">
-                A weekly note from the loom
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-600">
-                One weave, one maker, one thing worth knowing. No marketing
-                noise — unsubscribe anytime.
-              </p>
-              <form
-                className="mt-6 flex flex-col gap-3 sm:flex-row"
-                action="/api/newsletter"
-                method="post"
-              >
-                <label className="sr-only" htmlFor="newsletter-email">
-                  Email address
-                </label>
-                <input
-                  id="newsletter-email"
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  className="font-body focus:border-brand-500 h-12 flex-1 rounded-xl border border-neutral-300 bg-white px-4 text-sm text-neutral-900 transition-colors outline-none placeholder:text-neutral-400"
-                />
-                <button
-                  type="submit"
-                  className="bg-brand-600 font-display hover:bg-brand-700 inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold text-white transition-colors active:scale-95"
+            {/* Newsletter */}
+            <div className="lg:col-span-5">
+              <div className="sticky top-28 rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm md:p-10">
+                <div className="rule-gold mb-6" />
+                <Eyebrow>Letters on craft</Eyebrow>
+                <h3 className="font-display mt-4 text-2xl font-semibold tracking-tight text-neutral-900">
+                  A weekly note from the loom
+                </h3>
+                <p className="mt-3 max-w-[45ch] text-sm leading-relaxed text-neutral-600">
+                  One weave, one maker, one thing worth knowing. No marketing
+                  noise, no newsletters-that-are-really-sales-pitches.
+                  Unsubscribe anytime.
+                </p>
+                <form
+                  className="mt-6 flex flex-col gap-3"
+                  action="/api/newsletter"
+                  method="post"
                 >
-                  Subscribe
-                </button>
-              </form>
+                  <label className="sr-only" htmlFor="newsletter-email">
+                    Email address
+                  </label>
+                  <input
+                    id="newsletter-email"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className="font-body focus:border-brand-500 h-12 flex-1 rounded-xl border border-neutral-300 bg-white px-4 text-sm text-neutral-900 transition-colors outline-none placeholder:text-neutral-400"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-brand-600 font-display hover:bg-brand-700 focus-visible:ring-brand-400 inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold text-white transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97]"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+                <p className="mt-4 text-xs text-neutral-400">
+                  No spam. One email a week. Unsubscribe in one click.
+                </p>
+              </div>
             </div>
           </div>
         </div>
