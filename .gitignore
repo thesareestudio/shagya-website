@@ -35,6 +35,7 @@ next-env.d.ts
 # Testing
 coverage/
 .playwright/
+test-results/
 
 # Payload
 src/payload-types.ts
