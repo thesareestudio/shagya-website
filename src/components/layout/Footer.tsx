@@ -47,11 +47,11 @@ export function Footer() {
   return (
     <footer className="border-t border-neutral-200 bg-neutral-50/50">
       <div className="container-page py-20">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-12">
           {/* Brand */}
-          <div className="col-span-2 lg:col-span-1">
+          <div className="col-span-2 lg:col-span-4">
             <Logo wordmarkClassName="text-neutral-900" className="h-8 w-8" />
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-neutral-500">
+            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
               Handcrafted Indian sarees, woven with tradition. Premium silk,
               cotton, and designer sarees delivered to your doorstep.
             </p>
@@ -59,7 +59,7 @@ export function Footer() {
 
           {/* Links */}
           {Object.values(footerLinks).map((section) => (
-            <div key={section.title}>
+            <div key={section.title} className="lg:col-span-2">
               <h3 className="font-display mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
                 {section.title}
               </h3>
