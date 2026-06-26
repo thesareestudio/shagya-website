@@ -84,6 +84,26 @@ services:
       exit 0;
       "
 
+  # ---------------------------------------------------------------------------
+  # Mailpit — SMTP test server (local replacement for Resend)
+  # ---------------------------------------------------------------------------
+  # SMTP:   http://localhost:1025
+  # Web UI: http://localhost:8025
+  # API:    http://localhost:8025/api/v1
+  # ===========================================================================
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: shagya-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
 volumes:
   pgdata:
     name: shagya-pgdata
