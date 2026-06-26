@@ -1,6 +1,16 @@
+import nodemailer from 'nodemailer'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_test_dummy')
+
+function createMailpitTransport() {
+  return nodemailer.createTransport({
+    host: process.env.MAILPIT_SMTP_HOST!,
+    port: Number(process.env.MAILPIT_SMTP_PORT!),
+    secure: false,
+    ignoreTLS: true,
+  })
+}
 
 export async function sendEmail({
   to,
@@ -11,6 +21,20 @@ export async function sendEmail({
   subject: string
   html: string
 }) {
+  if (process.env.MAILPIT_SMTP_HOST) {
+    const transport = createMailpitTransport()
+    const info = await transport.sendMail({
+      from: 'Shagya <noreply@shagya.com>',
+      to,
+      subject,
+      html,
+    })
+    console.log(
+      `[Mailpit] Sent to ${to}: ${subject} (messageId: ${info.messageId})`,
+    )
+    return { success: true, messageId: info.messageId }
+  }
+
   if (
     !process.env.RESEND_API_KEY ||
     process.env.RESEND_API_KEY === 're_test_dummy'
