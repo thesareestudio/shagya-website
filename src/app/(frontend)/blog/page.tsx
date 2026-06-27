@@ -6,11 +6,11 @@ import { Calendar, User, ArrowRight } from 'lucide-react'
 export const revalidate = 3600 // cache for 1 hour
 
 export default async function BlogIndexPage() {
-  const payload = await getPayload({ config })
-
   let posts: any[] = []
 
   try {
+    const payload = await getPayload({ config })
+
     const result = await payload.find({
       collection: 'posts',
       where: {

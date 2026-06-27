@@ -43,11 +43,11 @@ function ImagePanel({
 }
 
 export default async function CollectionsPage() {
-  const payload = await getPayload({ config })
-
   let collectionsWithCovers: any[] = []
 
   try {
+    const payload = await getPayload({ config })
+
     const result = await payload.find({
       collection: 'collections',
       limit: 100,
