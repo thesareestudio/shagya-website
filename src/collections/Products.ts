@@ -6,6 +6,16 @@ export const Products: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Products',
   },
+  access: {
+    read: ({ req: { user } }) => {
+      // Authenticated users (admins in the iframe) see both drafts and published.
+      // Anonymous users only see published content.
+      return user ? true : { _status: { equals: 'published' } }
+    },
+    create: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => Boolean(user),
+  },
   hooks: {
     beforeChange: [
       ({ data }) => {
@@ -20,6 +30,11 @@ export const Products: CollectionConfig = {
         return data
       },
     ],
+  },
+  versions: {
+    drafts: {
+      autosave: { interval: 800 },
+    },
   },
   fields: [
     {
