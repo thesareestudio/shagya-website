@@ -19,9 +19,9 @@ describe('SiteSettings global', () => {
 
   // ---- Access Control ----
   describe('Access control', () => {
-    it('allows public read', () => {
+    it('gates read access to published for anonymous users', () => {
       const result = SiteSettings.access?.read?.({ req: {} } as any)
-      expect(result).toBe(true)
+      expect(result).toEqual({ _status: { equals: 'published' } })
     })
 
     it('blocks unauthenticated update', () => {

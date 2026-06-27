@@ -236,11 +236,11 @@ describe('Posts collection', () => {
   })
 
   describe('Access control', () => {
-    it('allows public read access', () => {
+    it('gates read access to published for anonymous users', () => {
       const readAccess = Posts.access?.read as Function
       expect(readAccess).toBeDefined()
       const result = readAccess({ req: { user: undefined } })
-      expect(result).toBe(true)
+      expect(result).toEqual({ _status: { equals: 'published' } })
     })
 
     it('requires authenticated user for create', () => {

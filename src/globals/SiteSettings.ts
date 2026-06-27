@@ -7,7 +7,11 @@ export const SiteSettings: GlobalConfig = {
     group: 'Settings',
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      // Authenticated users (admins in the iframe) see both drafts and published.
+      // Anonymous users only see published content.
+      return user ? true : { _status: { equals: 'published' } }
+    },
     update: ({ req: { user } }) => Boolean(user),
   },
   versions: {
