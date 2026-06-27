@@ -232,6 +232,30 @@ export default buildConfig({
       titleSuffix: '— Shagya',
       icons: [{ url: '/favicon.ico' }],
     },
+    livePreview: {
+      url: ({ data, collectionConfig, globalConfig }) => {
+        const base =
+          process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+        if (collectionConfig?.slug === 'pages' && data) {
+          return `${base}/${data.slug}?preview=true&id=${data.id}`
+        }
+        if (collectionConfig?.slug === 'posts' && data) {
+          return `${base}/blog/${data.slug}?preview=true&id=${data.id}`
+        }
+        if (collectionConfig?.slug === 'products' && data) {
+          return `${base}/products/${data.slug}?preview=true&id=${data.id}`
+        }
+        if (globalConfig?.slug === 'site-settings') {
+          return `${base}/?preview=true&id=site-settings`
+        }
+        return undefined
+      },
+      breakpoints: [
+        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
 
   // ---------------------------------------------------------------------------
