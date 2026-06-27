@@ -3,7 +3,6 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { SkeletonImage } from '@/components/ui/SkeletonImage'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import type { Collection } from '@/payload-types'
 
 const ph = (w: number, h: number, bg: string, fg: string, text: string) =>
   `https://placehold.co/${w}x${h}/${bg}/${fg}?text=${encodeURIComponent(text)}&font=lora`
@@ -50,7 +49,7 @@ export default async function CollectionsPage() {
     collection: 'collections',
     limit: 100,
   })
-  const dbCollections = result.docs as Collection[]
+  const dbCollections = result.docs as any[]
 
   // Resolve cover images dynamically for each collection
   const collectionsWithCovers = await Promise.all(
