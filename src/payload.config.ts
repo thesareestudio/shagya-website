@@ -373,16 +373,22 @@ export default buildConfig({
   // ---------------------------------------------------------------------------
   // CORS — allow Next.js frontend and admin
   // ---------------------------------------------------------------------------
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(
-    Boolean,
-  ),
+  cors: [
+    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    'https://shagya-website-sharma0x-4079-clow-work.vercel.app',
+    'https://shagya-website.vercel.app',
+    'https://shagya-website-clow-work.vercel.app',
+  ].filter(Boolean),
 
   // ---------------------------------------------------------------------------
   // CSRF — protect admin routes
   // ---------------------------------------------------------------------------
-  csrf: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(
-    Boolean,
-  ),
+  csrf: [
+    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    'https://shagya-website-sharma0x-4079-clow-work.vercel.app',
+    'https://shagya-website.vercel.app',
+    'https://shagya-website-clow-work.vercel.app',
+  ].filter(Boolean),
 
   // ---------------------------------------------------------------------------
   // Image Processing

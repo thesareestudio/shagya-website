@@ -22,8 +22,17 @@ function wrap(content: string): string {
 <tr><td align="center" style="padding:32px 16px;">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background-color:#ffffff;border:1px solid #E8DDE2;">
   <tr>
-    <td style="background-color:#6B2448;padding:30px 40px;text-align:center;">
-      <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;letter-spacing:0.2em;color:#FAF5F7;font-weight:400;">SHAYGA</span>
+    <td style="background-color:#ffffff;padding:30px 40px;text-align:left;">
+      <table cellpadding="0" cellspacing="0" style="margin:0;">
+        <tr>
+          <td valign="middle" style="padding-right:12px;">
+            <img src="{{storeUrl}}/shayga-logo.svg" alt="Logo" width="32" height="32" style="display:block; border:none;" />
+          </td>
+          <td valign="middle">
+            <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:0.02em;color:#6B2448;font-weight:400;">Shagya</span>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
   <tr><td height="2" style="background-color:#B5922A;font-size:0;line-height:0;">&nbsp;</td></tr>

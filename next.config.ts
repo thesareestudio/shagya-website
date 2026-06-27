@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'http', hostname: 'localhost', port: '3000' },
       { protocol: 'http', hostname: '127.0.0.1', port: '3000' },
+      {
+        protocol: 'https',
+        hostname: 'shagya-website-sharma0x-4079-clow-work.vercel.app',
+      },
+      { protocol: 'https', hostname: '*.r2.cloudflarestorage.com' },
     ],
   },
 
