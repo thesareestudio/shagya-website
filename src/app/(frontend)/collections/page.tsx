@@ -45,42 +45,51 @@ function ImagePanel({
 export default async function CollectionsPage() {
   const payload = await getPayload({ config })
 
-  const result = await payload.find({
-    collection: 'collections',
-    limit: 100,
-  })
-  const dbCollections = result.docs as any[]
+  let collectionsWithCovers: any[] = []
 
-  // Resolve cover images dynamically for each collection
-  const collectionsWithCovers = await Promise.all(
-    dbCollections.map(async (col) => {
-      // Find the first product in this collection
-      const productsRes = await payload.find({
-        collection: 'products',
-        where: {
-          collections: { contains: col.id },
-          status: { equals: 'published' },
-        },
-        limit: 1,
-      })
+  try {
+    const result = await payload.find({
+      collection: 'collections',
+      limit: 100,
+    })
+    const dbCollections = result.docs as any[]
 
-      let coverImage = ph(800, 1000, '69254e', 'f5e8ee', col.name)
-      if (productsRes.docs.length > 0) {
-        const firstProd = productsRes.docs[0]
-        if (
-          firstProd.gallery?.[0]?.image &&
-          typeof firstProd.gallery[0].image === 'object'
-        ) {
-          coverImage = firstProd.gallery[0].image.url || coverImage
+    collectionsWithCovers = await Promise.all(
+      dbCollections.map(async (col) => {
+        let coverImage = ph(800, 1000, '69254e', 'f5e8ee', col.name)
+
+        try {
+          const productsRes = await payload.find({
+            collection: 'products',
+            where: {
+              collections: { contains: col.id },
+              status: { equals: 'published' },
+            },
+            limit: 1,
+          })
+
+          if (productsRes.docs.length > 0) {
+            const firstProd = productsRes.docs[0]
+            if (
+              firstProd.gallery?.[0]?.image &&
+              typeof firstProd.gallery[0].image === 'object'
+            ) {
+              coverImage = firstProd.gallery[0].image.url || coverImage
+            }
+          }
+        } catch {
+          // use placeholder
         }
-      }
 
-      return {
-        ...col,
-        coverImage,
-      }
-    }),
-  )
+        return {
+          ...col,
+          coverImage,
+        }
+      }),
+    )
+  } catch {
+    collectionsWithCovers = []
+  }
 
   return (
     <div className="bg-surface min-h-screen py-12">

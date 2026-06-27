@@ -8,16 +8,21 @@ export const revalidate = 3600 // cache for 1 hour
 export default async function BlogIndexPage() {
   const payload = await getPayload({ config })
 
-  const result = await payload.find({
-    collection: 'posts',
-    where: {
-      status: { equals: 'published' },
-    },
-    sort: '-publishedAt',
-    depth: 2,
-  })
+  let posts: any[] = []
 
-  const posts = result.docs as any[]
+  try {
+    const result = await payload.find({
+      collection: 'posts',
+      where: {
+        status: { equals: 'published' },
+      },
+      sort: '-publishedAt',
+      depth: 2,
+    })
+    posts = result.docs as any[]
+  } catch {
+    posts = []
+  }
 
   return (
     <div className="bg-surface min-h-screen px-4 py-16 sm:px-6 lg:px-8">
