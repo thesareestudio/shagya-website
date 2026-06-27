@@ -133,31 +133,15 @@ export const EmailTemplates: CollectionConfig = {
     },
     {
       name: 'body',
-      type: 'textarea',
+      type: 'code',
       required: true,
       label: 'Email Body (HTML)',
       admin: {
-        description:
-          'Full HTML for the email. Use {{variableName}} placeholders for dynamic content. See "Available Variables" below — copy from the default template as a starting point.',
-        rows: 30,
-      },
-    },
-    {
-      name: 'availableVariables',
-      type: 'text',
-      label: 'Available Variables (read-only reference)',
-      admin: {
-        readOnly: true,
-        description:
-          'These placeholders are replaced when the email is sent. This field is auto-populated when you select a template identifier.',
-      },
-      hooks: {
-        beforeChange: [
-          ({ siblingData }) => {
-            const slug = siblingData?.slug as TemplateSlug | undefined
-            return slug ? (SLUG_META[slug]?.hint ?? '') : ''
-          },
-        ],
+        language: 'html',
+        components: {
+          Description:
+            '@/collections/components/EmailBodyDescription#EmailBodyDescription',
+        },
       },
     },
   ],
