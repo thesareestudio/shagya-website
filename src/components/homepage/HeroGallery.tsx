@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
 export interface HeroImage {
@@ -28,21 +28,27 @@ export function HeroGallery({ images }: HeroGalleryProps) {
     START_OFFSETS[2] % count,
   ])
 
-  // Start true to avoid hydration mismatch — real value set in effect
-  const [reducedMotion, setReducedMotion] = useState(true)
+  const [reducedMotion, setReducedMotion] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
   const timersRef = useRef<(ReturnType<typeof setTimeout> | null)[]>([
     null,
     null,
     null,
   ])
 
+  const handleMotionChange = useCallback(
+    (e: MediaQueryListEvent) => setReducedMotion(e.matches),
+    [],
+  )
+
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
+    mq.addEventListener('change', handleMotionChange)
+    return () => mq.removeEventListener('change', handleMotionChange)
+  }, [handleMotionChange])
 
   useEffect(() => {
     // Need at least 4 images to guarantee each panel always holds a unique index

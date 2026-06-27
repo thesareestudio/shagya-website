@@ -13,6 +13,7 @@ import {
   CheckCircle,
   ShieldCheck,
 } from 'lucide-react'
+import type { FormDoc } from '@/components/page/ContactForm'
 import { ContactForm } from '@/components/page/ContactForm'
 import { RefreshRouteOnSave } from '@/components/live-preview/RefreshRouteOnSave'
 
@@ -90,7 +91,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       },
       limit: 1,
     })
-    contactFormDoc = forms.docs[0] || null
+    contactFormDoc = (forms.docs[0] as FormDoc) || null
   }
 
   return (

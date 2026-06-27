@@ -100,7 +100,7 @@ export default async function OrderDetailsPage({
                 Ordered Masterpieces
               </h4>
               <div className="space-y-4">
-                {items?.map((item) => {
+                {items?.map((item, idx) => {
                   const firstImage = item.product?.gallery?.[0]?.image
                   const imageUrl =
                     typeof firstImage === 'object' && firstImage !== null
@@ -112,7 +112,7 @@ export default async function OrderDetailsPage({
                   return (
                     <Link
                       href={`/products/${item.product?.slug || '#'}`}
-                      key={item.id || Math.random().toString()}
+                      key={item.id || idx}
                       className="group hover:border-brand-200 hover:bg-brand-50/30 flex items-center gap-4 rounded-xl border border-neutral-100 bg-neutral-50/50 p-3 transition-colors"
                     >
                       <div className="h-24 w-20 shrink-0 overflow-hidden rounded-lg border border-neutral-100 bg-white transition-transform group-hover:scale-[1.02]">

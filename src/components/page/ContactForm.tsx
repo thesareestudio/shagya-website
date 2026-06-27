@@ -12,7 +12,7 @@ interface FormField {
   id?: string | null
 }
 
-interface FormDoc {
+export interface FormDoc {
   id: string | number
   title: string
   submitButtonText?: string | null
