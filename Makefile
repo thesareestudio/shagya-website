@@ -190,8 +190,24 @@ db-migrate-create: ## Create a new migration (MSG='description')
 	fi
 	pnpm payload migrate:create "$(MSG)"
 
-db-seed: ## Seed database with sample data
+db-seed: ## Seed database with sample data (uses .env)
 	@set -a && [ -f .env ] && . ./.env; set +a && pnpm seed
+
+db-seed-preview: ## Seed preview DB + R2 (sources .env.preview, no --env-file override)
+	@if [ ! -f .env.preview ]; then \
+		echo "❌ .env.preview not found."; \
+		exit 1; \
+	fi
+	@set -a && . ./.env.preview && set +a && \
+		node --import tsx/esm scripts/seed.ts
+
+db-sync-media-preview: ## Re-upload local images to preview R2 (sources .env.preview)
+	@if [ ! -f .env.preview ]; then \
+		echo "❌ .env.preview not found."; \
+		exit 1; \
+	fi
+	@set -a && . ./.env.preview && set +a && \
+		node --import tsx/esm scripts/sync-media-to-r2.ts
 
 db-generate-types: ## Generate Payload TypeScript types from schema
 	pnpm generate:types

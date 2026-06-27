@@ -29,6 +29,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
     "@base-ui/react": "^1.6.0",
     "@better-auth/passkey": "^1.6.20",
     "@payloadcms/db-postgres": "^3.39.0",

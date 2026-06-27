@@ -303,3 +303,75 @@ The CI build job runs `pnpm build` which loads `payload.config.ts` and other
 configs that reference `R2_*`, `DATABASE_URL`, `PAYLOAD_SECRET`. These must be
 provided even as placeholders since the build just runs Next.js compilation and
 doesn't actually connect to the database or R2 at build time.
+
+---
+
+## Vercel Preview Deploy
+
+### R2 Bucket CORS
+
+The `shayga-dev` Cloudflare R2 bucket needs CORS configured for Vercel preview domains. Use `s3cmd` or Cloudflare Dashboard to set:
+
+```
+AllowedOrigins: https://*.vercel.app, http://localhost:3000
+AllowedMethods: GET, HEAD
+AllowedHeaders: *
+```
+
+### R2 API Token Permissions
+
+When creating an R2 API token for write access, it needs **Object Read & Write** permission (not just Read). The token format is a long hex string (e.g., `d876a66f77eacda...`). Store as `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_REGION` in Vercel env.
+
+### Vercel Preview Env Variables
+
+Set preview env variables with `vercel env add`:
+
+- `BETTER_AUTH_SECRET` — random 32+ char string (from `openssl rand -base64 32`)
+- `BETTER_AUTH_URL` — set to the static Vercel alias (e.g., `https://shagya-website-sharma0x-4079-clow-work.vercel.app`)
+- `NEXT_PUBLIC_SERVER_URL` — same as `BETTER_AUTH_URL`
+  These must be set **before** the seed runs, otherwise media URLs get stored with `http://localhost:3000` prefix.
+
+### Payload Migrations in Preview Deploy
+
+The `deploy-preview.yml` workflow needs:
+
+1. `vercel pull --environment=preview` to get env vars
+2. Source `.vercel/.env.preview.local` before running commands
+3. `npx payload migrate` before `vercel build`
+4. `npx payload run scripts/seed.ts` to populate data (idempotent)
+
+### Payload CORS/CSRF
+
+`src/payload.config.ts` must include Vercel deployment domains:
+
+```ts
+cors: [
+  process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  'https://shagya-website-sharma0x-4079-clow-work.vercel.app',
+  'https://shagya-website.vercel.app',
+]
+```
+
+Same for `csrf`.
+
+### Next.js Image remotePatterns
+
+`next.config.ts` needs Vercel preview + R2 endpoints:
+
+```ts
+remotePatterns: [
+  {
+    protocol: 'https',
+    hostname: 'shagya-website-sharma0x-4079-clow-work.vercel.app',
+  },
+  { protocol: 'https', hostname: '*.r2.cloudflarestorage.com' },
+]
+```
+
+### Media URL is Virtual
+
+Payload's `upload` plugin `url` field is computed dynamically at query time based on `serverURL`. It's NOT stored in the DB. If `serverURL` changes after seeding, the URLs returned by API will automatically use the new serverURL. No need to migrate existing records.
+
+### Seed Link Failure Warning
+
+During seeding, some image uploads may fail with `ValidationError: filename` from Payload Drizzle adapter. This happens when a file with the same filename already exists in the DB (from a previous failed seed run). The seed script skips these gracefully — just re-run with `NEXT_PUBLIC_SERVER_URL` set correctly and the previously-uploaded images will still work.
