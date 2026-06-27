@@ -306,7 +306,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
     // Disabled automatic schema push to prevent conflict/deletion of Better Auth tables in development
-    push: process.env.NODE_ENV !== 'production',
+    push: false,
   }),
 
   // ---------------------------------------------------------------------------
