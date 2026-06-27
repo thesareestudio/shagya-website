@@ -99,7 +99,7 @@ export function Header() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="hover:text-brand-700 rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
+                className="hover:text-brand-700 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
                 aria-label="Search"
               >
                 <Search className="h-5 w-5" />
@@ -136,74 +136,98 @@ export function Header() {
 
               <button
                 onClick={() => setCartOpen(true)}
-                className="hover:text-brand-700 relative rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
+                className="hover:text-brand-700 relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
                 aria-label="Cart"
               >
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="bg-brand-600 font-body absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[10px] font-semibold text-white">
+                  <span className="bg-brand-600 font-body absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold text-white">
                     {cartCount}
                   </span>
                 )}
               </button>
 
               <button
-                className="rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 lg:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 lg:hidden"
+                onClick={() => setMobileMenuOpen(true)}
               >
-                {mobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
+                <Menu className="h-5 w-5" />
               </button>
             </div>
           </div>
+        </div>
+      </header>
 
-          {/* Mobile Nav */}
-          <div
-            className={cn(
-              'overflow-hidden transition-all duration-200 lg:hidden',
-              mobileMenuOpen
-                ? 'max-h-96 border-t border-neutral-200'
-                : 'max-h-0',
-            )}
-          >
-            <nav className="flex flex-col gap-0.5 px-2 py-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="font-body hover:text-brand-700 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <hr className="my-2 border-neutral-200" />
-              <Link
-                href="/account"
-                className="font-body rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                My Account
-              </Link>
-              <Link
-                href="/wishlist"
-                className="font-body rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 sm:hidden"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Wishlist
-              </Link>
-            </nav>
+      {/* Mobile Nav Overlay */}
+      <div
+        className={cn(
+          'bg-surface fixed inset-0 z-[120] flex flex-col transition-all duration-500 lg:hidden',
+          mobileMenuOpen
+            ? 'pointer-events-auto translate-x-0 opacity-100'
+            : 'pointer-events-none translate-x-full opacity-0',
+        )}
+      >
+        <div className="container-page">
+          <div className="flex h-15 items-center justify-between gap-6 border-b border-neutral-200">
+            <Logo wordmarkClassName="text-neutral-900" />
+            <button
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
         </div>
 
-        {/* SearchCommand and CartDrawer are rendered outside the <header>
-            so their position:fixed overlays escape the backdrop-filter
-            containing block created by glass-panel. */}
-      </header>
+        <nav className="flex-1 overflow-y-auto px-6 py-10 sm:px-8">
+          <div className="flex flex-col gap-6">
+            {navLinks.map((link, i) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  'font-display hover:text-brand-700 text-3xl font-medium text-neutral-900 transition-all duration-500',
+                  mobileMenuOpen
+                    ? 'translate-y-0 opacity-100'
+                    : 'translate-y-4 opacity-0',
+                )}
+                style={{ transitionDelay: `${i * 50 + 100}ms` }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div
+            className={cn(
+              'mt-10 flex flex-col gap-4 border-t border-neutral-200 pt-8 transition-all duration-500',
+              mobileMenuOpen
+                ? 'translate-y-0 opacity-100'
+                : 'translate-y-4 opacity-0',
+            )}
+            style={{ transitionDelay: `${navLinks.length * 50 + 100}ms` }}
+          >
+            <Link
+              href="/account"
+              className="font-body hover:text-brand-700 flex min-h-[44px] items-center gap-4 text-base font-medium text-neutral-600 transition-colors sm:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <User className="h-6 w-6" />
+              My Account
+            </Link>
+            <Link
+              href="/wishlist"
+              className="font-body hover:text-brand-700 flex min-h-[44px] items-center gap-4 text-base font-medium text-neutral-600 transition-colors sm:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Heart className="h-6 w-6" />
+              Wishlist
+            </Link>
+          </div>
+        </nav>
+      </div>
       <SearchCommand isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </>

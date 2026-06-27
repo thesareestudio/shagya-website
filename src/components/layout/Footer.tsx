@@ -46,12 +46,12 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="border-t border-neutral-200 bg-neutral-50">
-      <div className="container-page py-20">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-12">
+      <div className="container-page py-12 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-12 lg:gap-10">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-4">
             <Logo wordmarkClassName="text-neutral-900" className="h-8 w-8" />
-            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mt-4 text-sm leading-relaxed text-neutral-500">
               Handcrafted Indian sarees, woven with tradition. Premium silk,
               cotton, and designer sarees delivered to your doorstep.
             </p>
@@ -59,16 +59,16 @@ export function Footer() {
 
           {/* Links */}
           {Object.values(footerLinks).map((section) => (
-            <div key={section.title} className="lg:col-span-2">
-              <h3 className="font-display mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+            <div key={section.title} className="col-span-1 lg:col-span-2">
+              <h3 className="font-display mb-4 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
                 {section.title}
               </h3>
-              <ul className="space-y-2.5">
+              <ul className="space-y-1">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="hover:text-brand-700 text-sm text-neutral-600 transition-colors"
+                      className="hover:text-brand-700 inline-block py-1.5 text-sm text-neutral-600 transition-colors sm:py-1"
                     >
                       {link.label}
                     </Link>
@@ -80,7 +80,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-neutral-200 pt-8 md:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-neutral-200 pt-8 sm:mt-16 sm:flex-row sm:gap-4">
           <p className="text-xs text-neutral-400">
             &copy; {new Date().getFullYear()} Shayga. All rights reserved.
           </p>

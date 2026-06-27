@@ -127,7 +127,7 @@ function WeaveFilmstrip({
             return (
               <div
                 key={`${cat.id || cat.name}-${i}`}
-                className="relative flex h-24 w-40 shrink-0 items-end overflow-hidden rounded-lg bg-neutral-100 sm:h-28 sm:w-48"
+                className="relative flex h-28 w-44 shrink-0 items-end overflow-hidden rounded-lg bg-neutral-100 sm:h-32 sm:w-48"
               >
                 <SkeletonImage
                   src={img}
@@ -276,7 +276,7 @@ export default async function HomePage({ searchParams }: Props) {
           return (
             <section
               key={idx}
-              className="container-page pt-16 pb-24 md:pt-28 md:pb-40"
+              className="container-page pt-12 pb-16 sm:pt-16 sm:pb-24 md:pt-28 md:pb-40"
             >
               <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
                 <div className="animate-slide-up max-w-xl lg:col-span-6">
@@ -289,14 +289,14 @@ export default async function HomePage({ searchParams }: Props) {
                   <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
                     <Link
                       href={block.ctaLink || '/category/all'}
-                      className="bg-brand-600 hover:bg-brand-700 focus-visible:ring-brand-400 inline-flex h-13 items-center gap-2 rounded-xl px-7 text-base font-semibold text-white transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97]"
+                      className="bg-brand-600 hover:bg-brand-700 focus-visible:ring-brand-400 inline-flex h-12 items-center gap-2 rounded-xl px-6 text-base font-semibold text-white transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97] sm:h-13 sm:px-7"
                     >
                       {block.ctaText || 'Shop the collection'}
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                     <Link
                       href="/about"
-                      className="group inline-flex items-center gap-2 text-base font-medium text-neutral-600 transition-colors hover:text-neutral-900"
+                      className="group flex min-h-[44px] items-center gap-2 text-base font-medium text-neutral-600 transition-colors hover:text-neutral-900"
                     >
                       Our craft story
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -357,7 +357,7 @@ export default async function HomePage({ searchParams }: Props) {
               key={idx}
               className="scroll-reveal border-y border-neutral-200 bg-neutral-50"
             >
-              <div className="container-page grid items-center gap-12 py-24 md:py-32 lg:grid-cols-12 lg:gap-20">
+              <div className="container-page grid items-center gap-8 py-16 sm:gap-12 sm:py-24 md:py-32 lg:grid-cols-12 lg:gap-20">
                 <div
                   className={`lg:col-span-5 ${block.imagePosition === 'right' ? 'lg:order-2' : ''}`}
                 >
@@ -399,7 +399,7 @@ export default async function HomePage({ searchParams }: Props) {
           return (
             <section
               key={idx}
-              className="container-page scroll-reveal py-24 md:py-32"
+              className="container-page scroll-reveal py-16 sm:py-24 md:py-32"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <h2 className="text-headline font-display font-semibold tracking-tight text-neutral-900">
@@ -408,7 +408,7 @@ export default async function HomePage({ searchParams }: Props) {
                 {block.ctaText && block.ctaLink && (
                   <Link
                     href={block.ctaLink}
-                    className="group font-display text-brand-700 hover:text-brand-800 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
+                    className="group font-display text-brand-700 hover:text-brand-800 flex min-h-[44px] items-center gap-1.5 text-sm font-semibold transition-colors"
                   >
                     {block.ctaText}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -478,8 +478,8 @@ export default async function HomePage({ searchParams }: Props) {
               key={idx}
               className="scroll-reveal border-b border-neutral-200"
             >
-              <div className="container-page py-24 md:py-32">
-                <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+              <div className="container-page py-16 sm:py-24 md:py-32">
+                <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
                   <div className="lg:col-span-7">
                     <h2 className="text-headline font-display font-semibold tracking-tight text-neutral-900">
                       {block.heading}
@@ -534,7 +534,7 @@ export default async function HomePage({ searchParams }: Props) {
                     {block.ctaText && block.ctaLink && (
                       <Link
                         href={block.ctaLink}
-                        className="group font-display text-brand-700 hover:text-brand-800 mt-8 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+                        className="group font-display text-brand-700 hover:text-brand-800 mt-8 flex min-h-[44px] items-center gap-2 text-sm font-semibold transition-colors"
                       >
                         {block.ctaText}
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -572,7 +572,7 @@ export default async function HomePage({ searchParams }: Props) {
       {/* Promise Band is kept at bottom as a global element */}
       <section className="scroll-reveal bg-brand-950">
         <div className="rule-gold" />
-        <div className="container-page py-24 text-center md:py-32">
+        <div className="container-page py-16 text-center sm:py-24 md:py-32">
           <h2 className="text-headline font-display mx-auto max-w-3xl font-semibold tracking-tight text-white">
             Every saree is signed by its maker
           </h2>
@@ -584,14 +584,14 @@ export default async function HomePage({ searchParams }: Props) {
           <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Link
               href="/category/silk"
-              className="text-brand-800 hover:bg-gold-200 focus-visible:ring-gold-300 inline-flex h-13 items-center gap-2 rounded-xl bg-white px-7 text-base font-semibold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97]"
+              className="text-brand-800 hover:bg-gold-200 focus-visible:ring-gold-300 flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-base font-semibold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.97] sm:h-13 sm:px-7"
             >
               Begin browsing
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/about"
-              className="group inline-flex items-center gap-2 text-base font-medium text-neutral-300 transition-colors hover:text-white"
+              className="group flex min-h-[44px] items-center gap-2 text-base font-medium text-neutral-300 transition-colors hover:text-white"
             >
               Meet the weavers
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
