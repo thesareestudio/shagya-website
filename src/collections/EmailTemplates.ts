@@ -12,6 +12,8 @@ export const EMAIL_TEMPLATE_SLUGS = [
   'order-refunded-customer',
   'admin-order-refunded',
   'welcome-customer',
+  'verify-email',
+  'magic-link',
 ] as const
 
 export type TemplateSlug = (typeof EMAIL_TEMPLATE_SLUGS)[number]
@@ -60,6 +62,14 @@ const SLUG_META: Record<TemplateSlug, { label: string; hint: string }> = {
   'welcome-customer': {
     label: 'Welcome Email (Customer)',
     hint: '{{customerName}} {{storeUrl}}',
+  },
+  'verify-email': {
+    label: 'Verify Email (Customer)',
+    hint: '{{customerName}} {{verificationUrl}} {{storeUrl}}',
+  },
+  'magic-link': {
+    label: 'Magic Link Sign-in (Customer)',
+    hint: '{{verificationUrl}} {{storeUrl}}',
   },
 }
 

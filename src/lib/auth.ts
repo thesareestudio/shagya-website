@@ -2,18 +2,56 @@ import { betterAuth } from 'better-auth'
 import { passkey } from '@better-auth/passkey'
 import { phoneNumber, twoFactor, magicLink } from 'better-auth/plugins'
 import { Pool } from 'pg'
-import { sendEmail } from './email'
 import { sendSMS } from './sms'
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 })
 
+/**
+ * Lazy-load the centralized email senders so this module stays free of a
+ * direct Payload dependency at import time (avoids circular imports with
+ * payload.config). The Better Auth callbacks fire async at runtime, by
+ * which point Payload is initialized.
+ */
+async function sendVerificationEmail(
+  to: string,
+  name: string,
+  verificationUrl: string,
+): Promise<void> {
+  const { getPayload } = await import('payload')
+  const config = (await import('@payload-config')).default
+  const { sendVerificationEmail: send } = await import('@/email/send')
+  const payload = await getPayload({ config })
+  await send(payload, to, name, verificationUrl)
+}
+
+async function sendMagicLinkEmail(
+  to: string,
+  verificationUrl: string,
+): Promise<void> {
+  const { getPayload } = await import('payload')
+  const config = (await import('@payload-config')).default
+  const { sendMagicLinkEmail: send } = await import('@/email/send')
+  const payload = await getPayload({ config })
+  await send(payload, to, verificationUrl)
+}
+
 export const auth = betterAuth({
   database: pool,
   secret: process.env.BETTER_AUTH_SECRET || 'dev-secret-change-in-production',
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 3600, // 1 hour
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail(user.email, user.name || '', url)
+    },
   },
   socialProviders: {
     google: {
@@ -62,23 +100,7 @@ export const auth = betterAuth({
     }),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        const html = `
-          <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
-            <h1 style="color: #333;">Sign in to Shagya</h1>
-            <p>Click the button below to sign in to your Shagya account. This link is valid for 10 minutes.</p>
-            <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: oklch(0.65 0.18 65); color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600;">Sign in to Shagya</a>
-            <p style="margin-top: 16px; font-size: 14px; color: #666;">
-              If you didn't request this, you can safely ignore this email.
-            </p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-            <p style="font-size: 12px; color: #999;">Shagya — Premium Fabrics</p>
-          </div>
-        `
-        await sendEmail({
-          to: email,
-          subject: 'Sign in to Shagya',
-          html,
-        })
+        await sendMagicLinkEmail(email, url)
       },
     }),
   ],

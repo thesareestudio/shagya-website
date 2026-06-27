@@ -265,3 +265,39 @@ export async function sendWelcomeEmail(
   })
   await safeSend(payload, customerEmail, subject, html, 'welcome-customer')
 }
+
+/**
+ * Sends the email verification link during signup / sign-in.
+ * Called from Better Auth's `sendVerificationEmail` callback.
+ */
+export async function sendVerificationEmail(
+  payload: Payload,
+  to: string,
+  customerName: string,
+  verificationUrl: string,
+): Promise<void> {
+  const storeUrl = await getStoreUrl()
+  const { subject, html } = await renderEmail(payload, 'verify-email', {
+    customerName: customerName || to.split('@')[0],
+    verificationUrl,
+    storeUrl,
+  })
+  await safeSend(payload, to, subject, html, 'verify-email')
+}
+
+/**
+ * Sends a magic-link sign-in email.
+ * Called from Better Auth's `magicLink.sendMagicLink` callback.
+ */
+export async function sendMagicLinkEmail(
+  payload: Payload,
+  to: string,
+  verificationUrl: string,
+): Promise<void> {
+  const storeUrl = await getStoreUrl()
+  const { subject, html } = await renderEmail(payload, 'magic-link', {
+    verificationUrl,
+    storeUrl,
+  })
+  await safeSend(payload, to, subject, html, 'magic-link')
+}

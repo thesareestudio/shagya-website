@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSession } from '@/lib/auth-client'
+import { useCart } from '@/lib/store/cart'
 import { loadRazorpayScript } from '@/lib/razorpay'
 import {
   ArrowLeft,
@@ -34,11 +35,27 @@ interface CartItem {
   id: string
   product: {
     id: string
-    title: string
+    name: string
     slug: string
-    images?: Array<{ image?: { url?: string } }>
-    price: number
+    gallery?: Array<{
+      image?:
+        | {
+            url?: string
+            sizes?: {
+              thumbnail?: { url?: string }
+              card?: { url?: string }
+            }
+          }
+        | string
+    }>
+    basePrice: number
   }
+  variant?: {
+    id?: string
+    title?: string
+    size?: string
+    blouseCustomization?: string
+  } | null
   quantity: number
   unitPrice: number
 }
@@ -93,7 +110,27 @@ export default function CheckoutPage() {
         ])
 
         if (cartRes.ok) {
-          const cartData = await cartRes.json()
+          let cartData = await cartRes.json()
+
+          // If DB cart is empty but local cart has items (e.g. they added items while logged out or sync failed earlier)
+          const localItems = useCart.getState().items
+          if (
+            (!cartData.items || cartData.items.length === 0) &&
+            localItems.length > 0
+          ) {
+            const syncRes = await fetch('/api/cart', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                items: localItems,
+                couponId: useCart.getState().coupon?.id || null,
+              }),
+            })
+            if (syncRes.ok) {
+              cartData = await syncRes.json()
+            }
+          }
+
           setCart(cartData)
           if (!cartData.items || cartData.items.length === 0) {
             router.push('/')
@@ -779,37 +816,58 @@ export default function CheckoutPage() {
               </h3>
 
               {/* Items List */}
-              <div className="mb-6 max-h-[240px] space-y-4 overflow-y-auto pr-1">
+              <div className="mb-6 max-h-[320px] space-y-4 overflow-y-auto pr-2">
                 {cart?.items.map((item) => {
-                  const imageUrl = item.product.images?.[0]?.image?.url
+                  const firstImage = item.product.gallery?.[0]?.image
+                  const imageUrl =
+                    typeof firstImage === 'object' && firstImage !== null
+                      ? firstImage.url || firstImage.sizes?.thumbnail?.url
+                      : typeof firstImage === 'string'
+                        ? firstImage
+                        : undefined
+
                   return (
-                    <div key={item.id} className="flex gap-3">
-                      <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100">
-                        {imageUrl ? (
-                          <img
-                            src={imageUrl}
-                            alt={item.product.title}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="font-display flex h-full w-full items-center justify-center text-[10px] font-semibold text-neutral-400 uppercase">
-                            Saree
-                          </div>
-                        )}
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-neutral-900 text-[9px] font-bold text-white">
+                    <div key={item.id} className="flex gap-4">
+                      <div className="relative h-20 w-16 shrink-0">
+                        <div className="h-full w-full overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={item.product.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="font-display flex h-full w-full items-center justify-center p-1 text-center text-[10px] font-semibold text-neutral-400 uppercase">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-neutral-900 text-[10px] font-bold text-white shadow-xs">
                           {item.quantity}
                         </span>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-display truncate text-xs font-semibold text-neutral-900">
-                          {item.product.title}
+
+                      <div className="flex min-w-0 flex-1 flex-col justify-center py-1">
+                        <h4 className="font-display truncate text-sm font-semibold text-neutral-900">
+                          {item.product.name}
                         </h4>
-                        <p className="font-body mt-0.5 text-[10px] tracking-wider text-neutral-400 uppercase">
-                          Handloom Saree
-                        </p>
-                        <p className="font-body mt-1 text-xs font-semibold text-neutral-900">
-                          ₹{item.unitPrice.toLocaleString('en-IN')}
-                        </p>
+
+                        {item.variant && (
+                          <p className="font-body mt-0.5 text-xs text-neutral-500">
+                            {item.variant.title ||
+                              item.variant.size ||
+                              'Custom Option'}
+                          </p>
+                        )}
+
+                        <div className="mt-1.5 flex items-center justify-between">
+                          <p className="font-body text-xs font-semibold text-neutral-900">
+                            ₹{item.unitPrice.toLocaleString('en-IN')}
+                          </p>
+                          <p className="font-body text-[10px] font-medium tracking-wider text-neutral-400 uppercase">
+                            Qty: {item.quantity}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )

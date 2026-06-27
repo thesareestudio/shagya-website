@@ -210,7 +210,7 @@ describe('Seed data', () => {
         expect(typeof page.title).toBe('string')
         expect(page.slug).toBeTruthy()
         expect(page.template).toBeTruthy()
-        expect(page.bodyContent).toBeTruthy()
+        expect(page.blocks).toBeTruthy()
       }
     })
 

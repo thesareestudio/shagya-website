@@ -23,6 +23,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         betterAuthUserId: { equals: session.user.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (customers.docs.length === 0) {
@@ -38,6 +39,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         customer: { equals: customerId },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (carts.docs.length === 0) {
@@ -82,6 +84,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         betterAuthUserId: { equals: session.user.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (customers.docs.length === 0) {
@@ -103,6 +106,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         customer: { equals: customerId },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     let cart
@@ -131,12 +135,14 @@ export async function POST(request: Request): Promise<NextResponse> {
         collection: 'carts',
         id: carts.docs[0].id,
         data,
+        overrideAccess: true,
       })
     } else {
       // Create new cart
       cart = await payload.create({
         collection: 'carts',
         data,
+        overrideAccess: true,
       })
     }
 

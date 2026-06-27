@@ -217,7 +217,7 @@ async function uploadMedia(
   payload: Payload,
   imagePath: string,
   altText: string,
-): Promise<string | null> {
+): Promise<number | null> {
   const fullPath = path.join(process.cwd(), 'public', imagePath)
   if (!fs.existsSync(fullPath)) {
     console.warn(`    ⚠️ Image file not found: ${fullPath}`)

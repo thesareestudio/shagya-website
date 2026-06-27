@@ -255,6 +255,8 @@ export default buildConfig({
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
       ],
+      collections: ['pages', 'posts', 'products'],
+      globals: ['site-settings'],
     },
   },
 

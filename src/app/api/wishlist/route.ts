@@ -23,6 +23,7 @@ export async function GET(request: Request) {
         betterAuthUserId: { equals: session.user.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (customers.docs.length === 0) {
@@ -39,6 +40,7 @@ export async function GET(request: Request) {
       },
       limit: 1,
       depth: 2,
+      overrideAccess: true,
     })
 
     if (wishlists.docs.length === 0) {
@@ -95,13 +97,13 @@ export async function POST(request: Request) {
 
     const customer = customers.docs[0]
 
-    // Find customer's wishlist
     const wishlists = await payload.find({
       collection: 'wishlist',
       where: {
         customer: { equals: customer.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     let wishlistDoc = wishlists.docs[0]
@@ -110,13 +112,13 @@ export async function POST(request: Request) {
     const itemIndex = items.findIndex((item: any) => {
       const matchProduct =
         typeof item.product === 'object'
-          ? item.product.id === productId
-          : item.product === productId
+          ? String(item.product.id) === String(productId)
+          : String(item.product) === String(productId)
       const matchVariant =
         !variantId ||
         (typeof item.variant === 'object'
-          ? item.variant?.id === variantId
-          : item.variant === variantId)
+          ? String(item.variant?.id) === String(variantId)
+          : String(item.variant) === String(variantId))
       return matchProduct && matchVariant
     })
 
@@ -143,6 +145,7 @@ export async function POST(request: Request) {
         data: {
           items,
         },
+        overrideAccess: true,
       })
     } else {
       wishlistDoc = await payload.create({
@@ -151,6 +154,7 @@ export async function POST(request: Request) {
           customer: customer.id,
           items,
         },
+        overrideAccess: true,
       })
     }
 
@@ -197,6 +201,7 @@ export async function DELETE(request: Request) {
         betterAuthUserId: { equals: session.user.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     if (customers.docs.length === 0) {
@@ -212,6 +217,7 @@ export async function DELETE(request: Request) {
         customer: { equals: customer.id },
       },
       limit: 1,
+      overrideAccess: true,
     })
 
     const wishlistDoc = wishlists.docs[0]
@@ -229,13 +235,13 @@ export async function DELETE(request: Request) {
     items = items.filter((item: any) => {
       const matchProduct =
         typeof item.product === 'object'
-          ? item.product.id === productId
-          : item.product === productId
+          ? String(item.product.id) === String(productId)
+          : String(item.product) === String(productId)
       const matchVariant =
         !variantId ||
         (typeof item.variant === 'object'
-          ? item.variant?.id === variantId
-          : item.variant === variantId)
+          ? String(item.variant?.id) === String(variantId)
+          : String(item.variant) === String(variantId))
       return !(matchProduct && matchVariant)
     })
 
@@ -246,6 +252,7 @@ export async function DELETE(request: Request) {
         data: {
           items,
         },
+        overrideAccess: true,
       })
     }
 

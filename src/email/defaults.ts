@@ -267,4 +267,32 @@ ${btn('{{adminOrderUrl}}', 'View in Admin')}
 ${btn('{{storeUrl}}', 'Explore Collection')}
 `),
   },
+
+  // ── Customer: verify email ──────────────────────────────────────────────────
+  'verify-email': {
+    subject: 'Verify your email — Shagya',
+    body: wrap(`
+<h2 style="margin:0 0 6px;font-family:Georgia,serif;font-size:22px;font-weight:400;color:#6B2448;">Verify your email</h2>
+<p style="margin:0 0 24px;font-size:14px;color:#6B5E63;padding-bottom:20px;border-bottom:1px solid #E8DDE2;">Hi {{customerName}}, welcome to Shagya. Please confirm your email address to activate your account.</p>
+
+<p style="margin:0 0 6px;font-size:14px;color:#6B5E63;">This link is valid for 1 hour.</p>
+
+${btn('{{verificationUrl}}', 'Verify Email')}
+
+<p style="margin:28px 0 0;font-size:13px;color:#9B8E93;">If you didn't create an account with Shagya, you can safely ignore this email.</p>
+`),
+  },
+
+  // ── Customer: magic link sign-in ────────────────────────────────────────────
+  'magic-link': {
+    subject: 'Sign in to Shagya',
+    body: wrap(`
+<h2 style="margin:0 0 6px;font-family:Georgia,serif;font-size:22px;font-weight:400;color:#6B2448;">Sign in to Shagya</h2>
+<p style="margin:0 0 24px;font-size:14px;color:#6B5E63;padding-bottom:20px;border-bottom:1px solid #E8DDE2;">Use the button below to sign in to your Shagya account. This link is valid for 10 minutes.</p>
+
+${btn('{{verificationUrl}}', 'Sign In')}
+
+<p style="margin:28px 0 0;font-size:13px;color:#9B8E93;">If you didn't request this, you can safely ignore this email.</p>
+`),
+  },
 }
