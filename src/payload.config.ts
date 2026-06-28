@@ -350,13 +350,20 @@ export default buildConfig({
           return null as any
         }
         const extraText = extractSearchText(originalDoc)
+        const baseTitle =
+          originalDoc.title || originalDoc.name || searchDoc.title || ''
+
         if (extraText) {
           return {
             ...searchDoc,
-            title: [searchDoc.title, extraText].filter(Boolean).join(' '),
+            title: [baseTitle, extraText].filter(Boolean).join(' '),
           }
         }
-        return searchDoc
+
+        return {
+          ...searchDoc,
+          title: baseTitle,
+        }
       },
     }),
     seoPlugin({
