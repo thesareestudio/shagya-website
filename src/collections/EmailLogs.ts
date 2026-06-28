@@ -54,7 +54,7 @@ export const EmailLogs: CollectionConfig = {
       type: 'textarea',
       admin: {
         readOnly: true,
-        condition: (data) => data.status === 'failed',
+        condition: (data) => data?.status === 'failed',
       },
     },
     {
