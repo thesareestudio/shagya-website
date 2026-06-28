@@ -1,3 +1,4 @@
+import { TOTPField as TOTPField_3eb2cc20d1a2569c2ccbafcee15bd128 } from '@clocklimited/payload-2fa/rsc'
 import { EmailBodyDescription as EmailBodyDescription_8b8e431ee91cb6caae56cb2f79c82e08 } from '@/collections/components/EmailBodyDescription'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -31,11 +32,16 @@ import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloa
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { AdminIcon as AdminIcon_7a969c861589af9322f5d573a708d2fb } from '@/components/payload/AdminIcon'
 import { AdminLogo as AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
+import { TOTPProvider as TOTPProvider_3eb2cc20d1a2569c2ccbafcee15bd128 } from '@clocklimited/payload-2fa/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+import { TOTPSetup as TOTPSetup_3eb2cc20d1a2569c2ccbafcee15bd128 } from '@clocklimited/payload-2fa/rsc'
+import { TOTPVerify as TOTPVerify_3eb2cc20d1a2569c2ccbafcee15bd128 } from '@clocklimited/payload-2fa/rsc'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  '@clocklimited/payload-2fa/rsc#TOTPField':
+    TOTPField_3eb2cc20d1a2569c2ccbafcee15bd128,
   '@/collections/components/EmailBodyDescription#EmailBodyDescription':
     EmailBodyDescription_8b8e431ee91cb6caae56cb2f79c82e08,
   '@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell':
@@ -102,8 +108,14 @@ export const importMap = {
     AdminIcon_7a969c861589af9322f5d573a708d2fb,
   '@/components/payload/AdminLogo#AdminLogo':
     AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9,
+  '@clocklimited/payload-2fa/rsc#TOTPProvider':
+    TOTPProvider_3eb2cc20d1a2569c2ccbafcee15bd128,
   '@payloadcms/storage-s3/client#S3ClientUploadHandler':
     S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
+  '@clocklimited/payload-2fa/rsc#TOTPSetup':
+    TOTPSetup_3eb2cc20d1a2569c2ccbafcee15bd128,
+  '@clocklimited/payload-2fa/rsc#TOTPVerify':
+    TOTPVerify_3eb2cc20d1a2569c2ccbafcee15bd128,
   '@payloadcms/next/rsc#CollectionCards':
     CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
 }

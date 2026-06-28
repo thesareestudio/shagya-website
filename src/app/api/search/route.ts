@@ -42,15 +42,40 @@ export async function GET(request: Request): Promise<NextResponse> {
         },
       },
       limit,
-      depth: 1, // Populate the actual doc
     })
 
-    const docs = result.docs
+    const populatedDocs = await Promise.all(
+      result.docs.map(async (d: any) => {
+        if (!d.doc || !['products', 'posts'].includes(d.doc.relationTo)) {
+          return null
+        }
+
+        let docValue = d.doc.value
+
+        if (typeof docValue !== 'object') {
+          try {
+            docValue = await payload.findByID({
+              collection: d.doc.relationTo,
+              id: docValue,
+            })
+          } catch (e) {
+            return null
+          }
+        }
+
+        return {
+          ...d,
+          doc: {
+            ...d.doc,
+            value: docValue,
+          },
+        }
+      }),
+    )
+
+    const docs = populatedDocs
       .filter(
-        (d: any) =>
-          d.doc &&
-          typeof d.doc.value === 'object' &&
-          ['products', 'posts'].includes(d.doc.relationTo),
+        (d: any) => d !== null && d.doc && typeof d.doc.value === 'object',
       )
       .map((d: any, index: number) => {
         const type = d.doc.relationTo === 'products' ? 'product' : 'post'
@@ -82,7 +107,7 @@ export async function GET(request: Request): Promise<NextResponse> {
           rank: d.priority || limit - index,
         }
       })
-      .sort((a, b) => b.rank - a.rank)
+      .sort((a: any, b: any) => b.rank - a.rank)
 
     return NextResponse.json(
       {

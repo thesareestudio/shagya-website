@@ -340,8 +340,11 @@ export default buildConfig({
     }),
     searchPlugin({
       collections: ['products', 'pages', 'posts'],
-      syncDrafts: false,
+      syncDrafts: true,
       beforeSync: ({ originalDoc, searchDoc }) => {
+        if (originalDoc?.status && originalDoc.status !== 'published') {
+          return null as any
+        }
         const extraText = extractSearchText(originalDoc)
         if (extraText) {
           return {
