@@ -40,6 +40,24 @@ async function sendMagicLinkEmail(
 export const auth = betterAuth({
   database: pool,
   secret: process.env.BETTER_AUTH_SECRET || 'dev-secret-change-in-production',
+  baseURL:
+    process.env.BETTER_AUTH_URL &&
+    process.env.BETTER_AUTH_URL !== 'http://localhost:3000'
+      ? process.env.BETTER_AUTH_URL
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000',
+  trustedOrigins: [
+    'http://localhost:3000',
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
+      : []),
+    ...(process.env.VERCEL_BRANCH_URL
+      ? [`https://${process.env.VERCEL_BRANCH_URL}`]
+      : []),
+    'https://shagya-website-git-develop-clow-work.vercel.app', // Fallback for the current preview branch
+  ],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
