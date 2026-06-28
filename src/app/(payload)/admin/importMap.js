@@ -1,3 +1,4 @@
+import { EmailBodyDescription as EmailBodyDescription_8b8e431ee91cb6caae56cb2f79c82e08 } from '@/collections/components/EmailBodyDescription'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -28,11 +29,15 @@ import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c08
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
+import { AdminIcon as AdminIcon_7a969c861589af9322f5d573a708d2fb } from '@/components/payload/AdminIcon'
+import { AdminLogo as AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  '@/collections/components/EmailBodyDescription#EmailBodyDescription':
+    EmailBodyDescription_8b8e431ee91cb6caae56cb2f79c82e08,
   '@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell':
     RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   '@payloadcms/richtext-lexical/rsc#RscEntryLexicalField':
@@ -93,6 +98,10 @@ export const importMap = {
     LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   '@payloadcms/plugin-search/client#ReindexButton':
     ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
+  '@/components/payload/AdminIcon#AdminIcon':
+    AdminIcon_7a969c861589af9322f5d573a708d2fb,
+  '@/components/payload/AdminLogo#AdminLogo':
+    AdminLogo_313e964a7107ac39e31c5ff2e54b6ba9,
   '@payloadcms/storage-s3/client#S3ClientUploadHandler':
     S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   '@payloadcms/next/rsc#CollectionCards':

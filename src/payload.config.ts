@@ -228,6 +228,12 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
       importMapFile: path.resolve(dirname, 'app/(payload)/admin/importMap.js'),
     },
+    components: {
+      graphics: {
+        Logo: '@/components/payload/AdminLogo#AdminLogo',
+        Icon: '@/components/payload/AdminIcon#AdminIcon',
+      },
+    },
     meta: {
       titleSuffix: '— Shayga',
       icons: [{ url: '/favicon.ico' }],
