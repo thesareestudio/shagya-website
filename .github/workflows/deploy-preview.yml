@@ -3,6 +3,7 @@ name: Deploy Preview
 on:
   push:
     branches: [develop]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -21,7 +22,7 @@ jobs:
 
       - name: Set preview domain
         run: |
-          echo 'NEXT_PUBLIC_SERVER_URL="https://shagya-website-sharma0x-4079-clow-work.vercel.app"' >> .vercel/.env.preview.local
+          echo 'NEXT_PUBLIC_SERVER_URL="https://${{ vars.VERCEL_PREVIEW_DOMAIN }}"' >> .vercel/.env.preview.local
 
       - run: pnpm install --frozen-lockfile
 
