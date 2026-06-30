@@ -27,7 +27,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Run database migrations
-        run: npx payload migrate
+        run: |
+          npx payload migrate
+          npx @better-auth/cli migrate --config src/lib/auth.ts -y
         env:
           DATABASE_URL: ${{ secrets.NEON_DATABASE_URL_DEV }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
