@@ -12,6 +12,7 @@ import pg from 'pg'
 import {
   S3Client,
   ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
   DeleteObjectsCommand,
 } from '@aws-sdk/client-s3'
 
@@ -67,7 +68,7 @@ async function resetBucket() {
   let totalDeleted = 0
 
   while (isTruncated) {
-    const listResponse = await s3.send(
+    const listResponse: ListObjectsV2CommandOutput = await s3.send(
       new ListObjectsV2Command({
         Bucket: bucket,
         ContinuationToken: continuationToken,
