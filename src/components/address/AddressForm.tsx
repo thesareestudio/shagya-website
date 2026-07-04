@@ -8,6 +8,7 @@ import {
   OTHER_COUNTRY_VALUE,
 } from '@/lib/countries'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { Button } from '@/components/ui/button'
 
 export interface AddressFormData {
   fullName: string
@@ -284,6 +285,7 @@ export function AddressForm({
             id="address-customCountry"
             type="text"
             required
+            aria-label="Custom country name"
             value={customCountry}
             onChange={(e) => setCustomCountry(e.target.value)}
             className={`${textInputClass} mt-2`}
@@ -311,21 +313,22 @@ export function AddressForm({
       )}
 
       <div className="flex justify-end gap-3 pt-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={onCancel}
-          className="font-display h-10 rounded-xl border border-neutral-200 px-4 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
+          className="rounded-xl text-xs font-semibold"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="font-display bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-xl px-5 text-xs font-semibold text-white transition-all"
+          className="rounded-xl text-xs font-semibold"
         >
           {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {isSubmitting ? 'Saving...' : submitLabel}
-        </button>
+        </Button>
       </div>
     </form>
   )
