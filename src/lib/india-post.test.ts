@@ -327,6 +327,41 @@ describe('searchCity', () => {
     expect(result[0].pincodes).toContain('400008')
   })
 
+  it('keeps same-name post offices in different states distinct', async () => {
+    const offices = [
+      {
+        ...SUCCESS_OFFICE,
+        Name: 'Central',
+        Pincode: '400020',
+        District: 'Mumbai',
+        State: 'Maharashtra',
+      },
+      {
+        ...SUCCESS_OFFICE,
+        Name: 'Central',
+        Pincode: '141008',
+        District: 'Ludhiana',
+        State: 'Punjab',
+      },
+    ]
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          jsonResponse([
+            { Message: 'ok', Status: 'Success', PostOffice: offices },
+          ]),
+        ),
+    )
+
+    const result = await searchCity('Central')
+
+    expect(result).toHaveLength(2)
+    const states = result.map((r) => r.state).sort()
+    expect(states).toEqual(['Maharashtra', 'Punjab'])
+  })
+
   it('groups multiple pincodes under the same name+state', async () => {
     const offices = [
       {

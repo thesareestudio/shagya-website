@@ -127,13 +127,16 @@ export async function searchCity(city: string): Promise<CitySearchResult[]> {
 
   const grouped = new Map<
     string,
-    { state: string; district: string; pincodes: Set<string> }
+    { name: string; state: string; district: string; pincodes: Set<string> }
   >()
 
   for (const po of data[0].PostOffice) {
-    const key = po.Name
+    // Group by Name + State — a "Central" PO in Maharashtra and a "Central" PO
+    // in Tamil Nadu are distinct entries.
+    const key = `${po.Name}|${po.State}`
     if (!grouped.has(key)) {
       grouped.set(key, {
+        name: po.Name,
         state: po.State,
         district: po.District,
         pincodes: new Set(),
@@ -142,8 +145,8 @@ export async function searchCity(city: string): Promise<CitySearchResult[]> {
     grouped.get(key)!.pincodes.add(po.Pincode)
   }
 
-  return Array.from(grouped.entries()).map(([cityName, info]) => ({
-    city: cityName,
+  return Array.from(grouped.values()).map((info) => ({
+    city: info.name,
     state: info.state,
     district: info.district,
     pincodes: Array.from(info.pincodes),
