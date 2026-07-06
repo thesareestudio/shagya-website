@@ -110,6 +110,26 @@ async function processBlock(
       ...(imageId ? { image: imageId } : {}),
     }
   }
+
+  if (block.blockType === 'hero') {
+    let backgroundImageId = null
+    if (block.imagePath) {
+      backgroundImageId = await uploadMedia(
+        payload,
+        block.imagePath,
+        block.heading || 'Hero background',
+      )
+    }
+    return {
+      blockType: 'hero',
+      heading: block.heading,
+      subheading: block.subheading,
+      ctaText: block.ctaText,
+      ctaLink: block.ctaLink,
+      ...(backgroundImageId ? { backgroundImage: backgroundImageId } : {}),
+    }
+  }
+
   return block as unknown as Record<string, unknown>
 }
 
@@ -222,6 +242,18 @@ export async function seedCollections(payload: Payload): Promise<void> {
   }
 }
 
+function getMimeType(filename: string): string {
+  const ext = path.extname(filename).toLowerCase()
+  const map: Record<string, string> = {
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+  }
+  return map[ext] || 'image/jpeg'
+}
+
 async function uploadMedia(
   payload: Payload,
   imagePath: string,
@@ -256,7 +288,7 @@ async function uploadMedia(
       file: {
         data: fs.readFileSync(fullPath),
         name: filename,
-        mimetype: 'image/jpeg',
+        mimetype: getMimeType(filename),
         size: fs.statSync(fullPath).size,
       },
       overrideAccess: true,
