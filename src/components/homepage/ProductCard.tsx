@@ -1,12 +1,14 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { SkeletonImage } from '@/components/ui/SkeletonImage'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { ProductBadge } from '@/components/ui/ProductBadge'
 import { Rating } from '@/components/ui/Rating'
+import { useCart } from '@/lib/store/cart'
+import { IconShoppingCart, IconCheck } from '@tabler/icons-react'
 
 const ph = (w: number, h: number, bg: string, fg: string, text: string) =>
   `https://placehold.co/${w}x${h}/${bg}/${fg}?text=${encodeURIComponent(text)}&font=lora`
@@ -48,6 +50,8 @@ export function ProductCard({
   rating,
   className,
 }: ProductCardProps) {
+  const { addItem } = useCart()
+  const [added, setAdded] = useState(false)
   const imageUrl =
     product.gallery?.[0]?.image && typeof product.gallery[0].image === 'object'
       ? product.gallery[0].image.sizes?.card?.url ||
@@ -62,6 +66,23 @@ export function ProductCard({
             100,
         )
       : 0
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug || '',
+      basePrice: product.basePrice,
+      compareAtPrice: product.compareAtPrice ?? undefined,
+      gallery: product.gallery as any,
+      fabric: product.fabric || '',
+      weave: product.weave || '',
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1200)
+  }
 
   return (
     <Link
@@ -102,11 +123,24 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Quick-add overlay on hover */}
-        <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center p-3 transition-transform duration-300 group-hover:translate-y-0">
-          <span className="text-brand-700 w-full rounded-lg bg-white/90 py-2 text-center text-[11px] font-semibold backdrop-blur-sm transition-colors hover:bg-white">
-            Quick Add
-          </span>
+        {/* Cart button overlay on hover — bottom-right */}
+        <div className="absolute right-2 bottom-2 z-10 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <button
+            onClick={handleAddToCart}
+            className={cn(
+              'flex h-8 w-8 items-center justify-center rounded-full text-white shadow-lg transition-all active:scale-95',
+              added
+                ? 'scale-110 bg-green-500'
+                : 'bg-brand-600 hover:bg-brand-500',
+            )}
+            aria-label="Add to cart"
+          >
+            {added ? (
+              <IconCheck className="h-3.5 w-3.5" />
+            ) : (
+              <IconShoppingCart className="h-3.5 w-3.5" />
+            )}
+          </button>
         </div>
       </div>
 

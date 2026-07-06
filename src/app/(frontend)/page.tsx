@@ -6,6 +6,17 @@ import {
   Sparkles,
   Lock,
 } from 'lucide-react'
+import {
+  IconBrandInstagram,
+  IconBrandFacebook,
+  IconBrandYoutube,
+  IconBrandPinterest,
+  IconHeart,
+  IconSparkles,
+  IconSun,
+  IconGift,
+  IconGlassFull,
+} from '@tabler/icons-react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -229,6 +240,16 @@ export default async function HomePage({ searchParams }: Props) {
   })
   const dbCategories = categoriesRes.docs
 
+  // ─── Fetch reviews ──────────────────────────────────
+  const reviewsRes = await payload.find({
+    collection: 'reviews',
+    where: { status: { equals: 'approved' } },
+    limit: 6,
+    sort: '-createdAt',
+    depth: 2,
+  })
+  const dbReviews = reviewsRes.docs
+
   // ─── Fetch posts ─────────────────────────────────────
   const postsRes = await payload.find({
     collection: 'posts',
@@ -323,79 +344,27 @@ export default async function HomePage({ searchParams }: Props) {
   const OCCASIONS = [
     {
       label: 'Wedding',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      ),
+      icon: <IconHeart className="h-6 w-6" />,
       href: '/category/all?occasion=wedding',
     },
     {
       label: 'Festival',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M12 3l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4l2-4z" />
-        </svg>
-      ),
+      icon: <IconSparkles className="h-6 w-6" />,
       href: '/category/all?occasion=festive',
     },
     {
       label: 'Daily Wear',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M6 6h12l2 4H4l2-4zM4 10h16v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8z" />
-        </svg>
-      ),
+      icon: <IconSun className="h-6 w-6" />,
       href: '/category/cotton',
     },
     {
       label: 'Gifting',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <rect x="3" y="8" width="18" height="12" rx="2" />
-          <path d="M12 8v14M8 8a4 4 0 118 0" />
-        </svg>
-      ),
+      icon: <IconGift className="h-6 w-6" />,
       href: '/collections/gift-guide',
     },
     {
       label: 'Party',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v6l4 2" />
-        </svg>
-      ),
+      icon: <IconGlassFull className="h-6 w-6" />,
       href: '/category/designer',
     },
   ]
@@ -630,7 +599,98 @@ export default async function HomePage({ searchParams }: Props) {
       )}
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 5: BEST SELLERS
+          SECTION 5: SHOP BY OCCASION + TRENDING COLORS + SOCIAL
+          ═══════════════════════════════════════════════════ */}
+      <section className="bg-brand-50/20">
+        <div className="container-page py-10 sm:py-14 md:py-20">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-10">
+            {/* ── Shop by Occasion ── */}
+            <div>
+              <SectionHeading
+                title="Shop by Occasion"
+                subtitle="Find the perfect saree"
+                align="center"
+                size="sm"
+              />
+              <div className="flex flex-wrap justify-center gap-2">
+                {OCCASIONS.map((occ) => (
+                  <OccasionButton
+                    key={occ.label}
+                    label={occ.label}
+                    icon={occ.icon}
+                    href={occ.href}
+                    compact
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* ── Trending Colors ── */}
+            <div>
+              <SectionHeading
+                title="Trending Colors"
+                subtitle="This season's most-loved shades"
+                align="center"
+                size="sm"
+              />
+              <div className="flex justify-center">
+                <TrendingColors compact />
+              </div>
+            </div>
+
+            {/* ── Social ── */}
+            <div>
+              <SectionHeading
+                title="Follow the Loom"
+                subtitle="Behind the weave, in real time"
+                align="center"
+                size="sm"
+              />
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href="https://instagram.com/shayga"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="bg-brand-100 hover:bg-brand-600/10 text-brand-700 hover:text-brand-600 flex h-12 w-12 items-center justify-center rounded-full transition-colors"
+                >
+                  <IconBrandInstagram className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://facebook.com/shayga"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="bg-brand-100 hover:bg-brand-600/10 text-brand-700 hover:text-brand-600 flex h-12 w-12 items-center justify-center rounded-full transition-colors"
+                >
+                  <IconBrandFacebook className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://youtube.com/@shayga"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="bg-brand-100 hover:bg-brand-600/10 text-brand-700 hover:text-brand-600 flex h-12 w-12 items-center justify-center rounded-full transition-colors"
+                >
+                  <IconBrandYoutube className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://pinterest.com/shayga"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Pinterest"
+                  className="bg-brand-100 hover:bg-brand-600/10 text-brand-700 hover:text-brand-600 flex h-12 w-12 items-center justify-center rounded-full transition-colors"
+                >
+                  <IconBrandPinterest className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          SECTION 6: BEST SELLERS
           ═══════════════════════════════════════════════════ */}
       {productBlocks[1] && allProductsRes.docs.length > 0 && (
         <section className="bg-brand-50/20">
@@ -652,43 +712,7 @@ export default async function HomePage({ searchParams }: Props) {
       )}
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 6: SHOP BY OCCASION + TRENDING COLORS
-          ═══════════════════════════════════════════════════ */}
-      <section className="bg-brand-50/20">
-        <div className="container-page py-10 sm:py-14 md:py-20">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:gap-14">
-            {/* ── Shop by Occasion ── */}
-            <div>
-              <SectionHeading
-                title="Shop by Occasion"
-                subtitle="Find the perfect saree"
-              />
-              <div className="flex flex-wrap gap-3">
-                {OCCASIONS.map((occ) => (
-                  <OccasionButton
-                    key={occ.label}
-                    label={occ.label}
-                    icon={occ.icon}
-                    href={occ.href}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* ── Trending Colors ── */}
-            <div>
-              <SectionHeading
-                title="Trending Colors"
-                subtitle="This season's most-loved shades"
-              />
-              <TrendingColors />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          SECTION 7: BLOG POSTS
+          SECTION 7: BLOG POSTS (was 9)
           ═══════════════════════════════════════════════════ */}
       {dbPosts.length > 0 && (
         <section className="bg-white">
@@ -785,24 +809,43 @@ export default async function HomePage({ searchParams }: Props) {
           />
 
           <div className="grid gap-6 md:grid-cols-3">
-            <TestimonialCard
-              quote="The Banarasi I ordered is absolutely stunning. You can feel the weight of real silk. Every time I wear it, I get compliments — and I love telling people it's directly from the weaver."
-              name="Ananya S."
-              location="Mumbai"
-              rating={5}
-            />
-            <TestimonialCard
-              quote="I was nervous buying a saree online without seeing it first, but the handloom certificate and detailed photos made it easy. The fabric is even more beautiful in person. Will definitely be back."
-              name="Priya M."
-              location="Bangalore"
-              rating={5}
-            />
-            <TestimonialCard
-              quote="What sets Shayga apart is knowing exactly which cluster my saree came from and who wove it. It transforms a piece of clothing into a story. My Chanderi is easily my most treasured possession now."
-              name="Rohini K."
-              location="Pune"
-              rating={5}
-            />
+            {dbReviews.length > 0 ? (
+              dbReviews
+                .slice(0, 3)
+                .map((review: any) => (
+                  <TestimonialCard
+                    key={review.id}
+                    quote={review.body}
+                    name={
+                      review.customer?.name ||
+                      review.customer?.email?.split('@')[0] ||
+                      'Customer'
+                    }
+                    rating={review.rating}
+                  />
+                ))
+            ) : (
+              <>
+                <TestimonialCard
+                  quote="The Banarasi I ordered is absolutely stunning. You can feel the weight of real silk. Every time I wear it, I get compliments — and I love telling people it's directly from the weaver."
+                  name="Ananya S."
+                  location="Mumbai"
+                  rating={5}
+                />
+                <TestimonialCard
+                  quote="I was nervous buying a saree online without seeing it first, but the handloom certificate and detailed photos made it easy. The fabric is even more beautiful in person. Will definitely be back."
+                  name="Priya M."
+                  location="Bangalore"
+                  rating={5}
+                />
+                <TestimonialCard
+                  quote="What sets Shayga apart is knowing exactly which cluster my saree came from and who wove it. It transforms a piece of clothing into a story. My Chanderi is easily my most treasured possession now."
+                  name="Rohini K."
+                  location="Pune"
+                  rating={5}
+                />
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -858,21 +901,18 @@ export default async function HomePage({ searchParams }: Props) {
             </div>
 
             {/* ── Newsletter ── */}
-            <div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-4xl">
-                A weekly note
-                <br />
-                from the loom
+            <div className="self-start rounded-2xl bg-white p-5 shadow-lg sm:p-6">
+              <h2 className="font-display text-brand-950 text-lg font-semibold tracking-tight sm:text-xl">
+                A weekly note from the loom
               </h2>
-              <p className="text-brand-200/70 mt-4 max-w-md text-base leading-relaxed">
-                One weave, one maker, one thing worth knowing. No marketing
-                noise, no newsletters-that-are-really-sales-pitches. Unsubscribe
+              <p className="text-brand-700/70 mt-2 text-sm leading-relaxed">
+                One weave, one maker, one thing worth knowing. Unsubscribe
                 anytime.
               </p>
-              <div className="mt-8 max-w-md">
+              <div className="mt-4">
                 <NewsletterForm />
               </div>
-              <p className="text-brand-400/60 mt-3 text-xs">
+              <p className="text-brand-700/40 mt-2 text-xs">
                 No spam. One email a week. Unsubscribe in one click.
               </p>
             </div>
