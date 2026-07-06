@@ -78,33 +78,67 @@ export default async function HomePage({ searchParams }: Props) {
   const isPreview = preview === 'true' && id === 'site-settings'
   const payload = await getPayload({ config })
 
-  // ─── Fetch home page doc ─────────────────────────────
-  const pageRes = await payload.find({
-    collection: 'pages',
-    where: { slug: { equals: 'home' } },
-    limit: 1,
-    depth: 1,
-  })
-  const homeDoc = pageRes.docs[0]
-
   // ─── Fetch products for curated sections ──────────────
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
   const THIRTY_DAYS_AGO = thirtyDaysAgo.toISOString()
 
-  // New Arrivals: products created in the last 30 days
-  let newArrivalsRes = await payload.find({
-    collection: 'products',
-    where: {
-      and: [
-        { status: { equals: 'published' } },
-        { createdAt: { greater_than: THIRTY_DAYS_AGO } },
-      ],
-    },
-    limit: 2,
-    sort: '-createdAt',
-    depth: 1,
-  })
+  // Run independent queries in parallel
+  const [pageRes, initialNewArrivals, recentOrdersRes, allProductsRes] =
+    await Promise.all([
+      // Home page doc
+      payload.find({
+        collection: 'pages',
+        where: { slug: { equals: 'home' } },
+        limit: 1,
+        depth: 1,
+      }),
+      // New Arrivals: products created in the last 30 days
+      payload.find({
+        collection: 'products',
+        where: {
+          and: [
+            { status: { equals: 'published' } },
+            { createdAt: { greater_than: THIRTY_DAYS_AGO } },
+          ],
+        },
+        limit: 2,
+        sort: '-createdAt',
+        depth: 1,
+      }),
+      // Recent orders for trending calculation
+      payload.find({
+        collection: 'orders',
+        where: {
+          and: [
+            { createdAt: { greater_than: THIRTY_DAYS_AGO } },
+            {
+              or: [
+                { status: { equals: 'confirmed' } },
+                { status: { equals: 'processing' } },
+                { status: { equals: 'shipped' } },
+                { status: { equals: 'delivered' } },
+                { status: { equals: 'pending' } },
+              ],
+            },
+          ],
+        },
+        limit: 500,
+        depth: 0,
+      }),
+      // All products for carousel (Best Sellers section)
+      payload.find({
+        collection: 'products',
+        where: { status: { equals: 'published' } },
+        limit: 12,
+        sort: '-createdAt',
+        depth: 1,
+      }),
+    ])
+  const homeDoc = pageRes.docs[0]
+
+  // New Arrivals fallback: if no products created in last 30 days, show most recent
+  let newArrivalsRes = initialNewArrivals
   if (newArrivalsRes.totalDocs === 0) {
     newArrivalsRes = await payload.find({
       collection: 'products',
@@ -118,25 +152,6 @@ export default async function HomePage({ searchParams }: Props) {
 
   // Trending Now: most ordered products in last 30 days
   const newArrivalIds = new Set(newArrivals.map((p) => p.id))
-  const recentOrdersRes = await payload.find({
-    collection: 'orders',
-    where: {
-      and: [
-        { createdAt: { greater_than: THIRTY_DAYS_AGO } },
-        {
-          or: [
-            { status: { equals: 'confirmed' } },
-            { status: { equals: 'processing' } },
-            { status: { equals: 'shipped' } },
-            { status: { equals: 'delivered' } },
-            { status: { equals: 'pending' } },
-          ],
-        },
-      ],
-    },
-    limit: 500,
-    depth: 0,
-  })
 
   const productQuantities = new Map<number, number>()
   for (const order of recentOrdersRes.docs) {
@@ -186,31 +201,26 @@ export default async function HomePage({ searchParams }: Props) {
   const trendingIds = new Set(trendingNow.map((p) => p.id))
 
   // Best Offers: products with compareAtPrice > basePrice
-  let bestOffersRes = await payload.find({
+  // Fetch more than needed (limit 10) then JS-filter to top 2 with real discounts,
+  // because Payload's where clause cannot compare two fields (a > b)
+  const bestOffersWhere: any[] = [
+    { status: { equals: 'published' } },
+    { compareAtPrice: { exists: true } },
+  ]
+  const dedupIds = [...newArrivalIds, ...trendingIds]
+  if (dedupIds.length > 0) {
+    bestOffersWhere.push({ id: { not_in: dedupIds } })
+  }
+  const bestOffersRes = await payload.find({
     collection: 'products',
-    where: {
-      and: [
-        { status: { equals: 'published' } },
-        { compareAtPrice: { exists: true } },
-        { id: { not_in: [...newArrivalIds, ...trendingIds] } },
-      ],
-    },
-    limit: 2,
+    where: { and: bestOffersWhere },
+    limit: 10,
     sort: '-compareAtPrice',
     depth: 1,
   })
-  const bestOffers = bestOffersRes.docs.filter(
-    (p) => (p as any).compareAtPrice > (p as any).basePrice,
-  )
-
-  // All products for carousel (Best Sellers section)
-  const allProductsRes = await payload.find({
-    collection: 'products',
-    where: { status: { equals: 'published' } },
-    limit: 12,
-    sort: '-createdAt',
-    depth: 1,
-  })
+  const bestOffers = bestOffersRes.docs
+    .filter((p) => (p as any).compareAtPrice > (p as any).basePrice)
+    .slice(0, 2)
 
   // ─── Fetch categories ────────────────────────────────
   const categoriesRes = await payload.find({
@@ -553,7 +563,7 @@ export default async function HomePage({ searchParams }: Props) {
       </section>
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 4: COMBINED — New Arrivals + Trending Now + Shop by Occasion
+          SECTION 4: COMBINED — New Arrivals + Trending Now + Best Offers
           ═══════════════════════════════════════════════════ */}
       {(newArrivals.length > 0 ||
         trendingNow.length > 0 ||
