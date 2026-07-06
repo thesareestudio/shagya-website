@@ -15,8 +15,6 @@ import { RefreshRouteOnSave } from '@/components/live-preview/RefreshRouteOnSave
 import { SectionHeading } from '@/components/homepage/SectionHeading'
 import { ProductCard, ProductCarousel } from '@/components/homepage/ProductCard'
 import { CategoryCard } from '@/components/homepage/CategoryCard'
-import { OccasionButton } from '@/components/homepage/OccasionButton'
-import { TrendingColors } from '@/components/homepage/TrendingColors'
 import { InstagramGallery } from '@/components/homepage/InstagramGallery'
 import { TestimonialCard } from '@/components/homepage/TestimonialCard'
 
@@ -87,14 +85,130 @@ export default async function HomePage({ searchParams }: Props) {
   })
   const homeDoc = pageRes.docs[0]
 
-  // ─── Fetch products ──────────────────────────────────
-  const productsRes = await payload.find({
+  // ─── Fetch products for curated sections ──────────────
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const THIRTY_DAYS_AGO = thirtyDaysAgo.toISOString()
+
+  // New Arrivals: products created in the last 30 days
+  let newArrivalsRes = await payload.find({
+    collection: 'products',
+    where: {
+      and: [
+        { status: { equals: 'published' } },
+        { createdAt: { greater_than: THIRTY_DAYS_AGO } },
+      ],
+    },
+    limit: 2,
+    sort: '-createdAt',
+    depth: 1,
+  })
+  if (newArrivalsRes.totalDocs === 0) {
+    newArrivalsRes = await payload.find({
+      collection: 'products',
+      where: { status: { equals: 'published' } },
+      limit: 2,
+      sort: '-createdAt',
+      depth: 1,
+    })
+  }
+  const newArrivals = newArrivalsRes.docs
+
+  // Trending Now: most ordered products in last 30 days
+  const newArrivalIds = new Set(newArrivals.map((p) => p.id))
+  const recentOrdersRes = await payload.find({
+    collection: 'orders',
+    where: {
+      and: [
+        { createdAt: { greater_than: THIRTY_DAYS_AGO } },
+        {
+          or: [
+            { status: { equals: 'confirmed' } },
+            { status: { equals: 'processing' } },
+            { status: { equals: 'shipped' } },
+            { status: { equals: 'delivered' } },
+            { status: { equals: 'pending' } },
+          ],
+        },
+      ],
+    },
+    limit: 500,
+    depth: 0,
+  })
+
+  const productQuantities = new Map<number, number>()
+  for (const order of recentOrdersRes.docs) {
+    for (const item of (order as any).items ?? []) {
+      const pid =
+        typeof item.product === 'number' ? item.product : item.product?.id
+      if (!pid) continue
+      productQuantities.set(
+        pid,
+        (productQuantities.get(pid) ?? 0) + (item.quantity ?? 1),
+      )
+    }
+  }
+  const sortedProductIds = [...productQuantities.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .filter(([id]) => !newArrivalIds.has(id))
+    .map(([id]) => id)
+
+  let trendingNowDocs: any[] = []
+  if (sortedProductIds.length > 0) {
+    const topIds = sortedProductIds.slice(0, 2)
+    const trendingRes = await payload.find({
+      collection: 'products',
+      where: { id: { in: topIds } },
+      limit: 2,
+      depth: 1,
+    })
+    trendingNowDocs = trendingRes.docs
+  }
+  if (trendingNowDocs.length === 0) {
+    const fallbackRes = await payload.find({
+      collection: 'products',
+      where: {
+        and: [
+          { status: { equals: 'published' } },
+          { id: { not_in: [...newArrivalIds] } },
+        ],
+      },
+      limit: 2,
+      sort: '-createdAt',
+      depth: 1,
+    })
+    trendingNowDocs = fallbackRes.docs
+  }
+  const trendingNow = trendingNowDocs
+
+  const trendingIds = new Set(trendingNow.map((p) => p.id))
+
+  // Best Offers: products with compareAtPrice > basePrice
+  let bestOffersRes = await payload.find({
+    collection: 'products',
+    where: {
+      and: [
+        { status: { equals: 'published' } },
+        { compareAtPrice: { exists: true } },
+        { id: { not_in: [...newArrivalIds, ...trendingIds] } },
+      ],
+    },
+    limit: 2,
+    sort: '-compareAtPrice',
+    depth: 1,
+  })
+  const bestOffers = bestOffersRes.docs.filter(
+    (p) => (p as any).compareAtPrice > (p as any).basePrice,
+  )
+
+  // All products for carousel (Best Sellers section)
+  const allProductsRes = await payload.find({
     collection: 'products',
     where: { status: { equals: 'published' } },
-    limit: 24,
+    limit: 12,
     sort: '-createdAt',
+    depth: 1,
   })
-  const dbProducts = productsRes.docs
 
   // ─── Fetch categories ────────────────────────────────
   const categoriesRes = await payload.find({
@@ -112,11 +226,6 @@ export default async function HomePage({ searchParams }: Props) {
     depth: 1,
   })
   const dbPosts = postsRes.docs
-
-  // ─── Helper to split products into sections ──────────
-  function productsSlice(start: number, count: number) {
-    return dbProducts.slice(start, start + count)
-  }
 
   // ─── Extract CMS block headings ──────────────────────
   const contentBlocks = homeDoc?.content ?? []
@@ -193,86 +302,6 @@ export default async function HomePage({ searchParams }: Props) {
       icon: <Lock className="h-7 w-7" />,
       title: 'Secure Payment',
       description: 'Protected checkout',
-    },
-  ]
-
-  const OCCASIONS = [
-    {
-      label: 'Wedding',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      ),
-      href: '/category/all?occasion=wedding',
-    },
-    {
-      label: 'Festival',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M12 3l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4l2-4z" />
-        </svg>
-      ),
-      href: '/category/all?occasion=festive',
-    },
-    {
-      label: 'Daily Wear',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M6 6h12l2 4H4l2-4zM4 10h16v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8z" />
-        </svg>
-      ),
-      href: '/category/cotton',
-    },
-    {
-      label: 'Gifting',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <rect x="3" y="8" width="18" height="12" rx="2" />
-          <path d="M12 8v14M8 8a4 4 0 118 0" />
-        </svg>
-      ),
-      href: '/collections/gift-guide',
-    },
-    {
-      label: 'Party',
-      icon: (
-        <svg
-          className="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v6l4 2" />
-        </svg>
-      ),
-      href: '/category/designer',
     },
   ]
 
@@ -444,73 +473,65 @@ export default async function HomePage({ searchParams }: Props) {
       {/* ═══════════════════════════════════════════════════
           SECTION 4: COMBINED — New Arrivals + Trending Now + Shop by Occasion
           ═══════════════════════════════════════════════════ */}
-      {dbProducts.length > 0 && (
+      {(newArrivals.length > 0 ||
+        trendingNow.length > 0 ||
+        bestOffers.length > 0) && (
         <section className="bg-white">
           <div className="container-page py-10 sm:py-14 md:py-20">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-10">
               {/* ── New Arrivals ── */}
-              <div>
-                <SectionHeading
-                  title="New Arrivals"
-                  subtitle="Fresh off the loom"
-                  viewAllHref="/category/all?sort=-createdAt"
-                  viewAllLabel="View All"
-                  size="sm"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  {productsSlice(0, 2).map((p) => (
-                    <ProductCard key={p.id} product={p} badge="new" />
-                  ))}
-                </div>
-              </div>
-
-              {/* ── Trending Now ── */}
-              <div>
-                <SectionHeading
-                  title="Trending Now"
-                  subtitle="What everyone is loving"
-                  viewAllHref="/category/all"
-                  viewAllLabel="View more"
-                  size="sm"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  {productsSlice(2, 2).map((p) => (
-                    <ProductCard key={p.id} product={p} />
-                  ))}
-                </div>
-              </div>
-
-              {/* ── 3rd column: Shop by Occasion + Trending Colors ── */}
-              <div className="flex flex-col gap-8">
+              {newArrivals.length > 0 && (
                 <div>
                   <SectionHeading
-                    title="Shop by Occasion"
-                    subtitle="Find the perfect saree"
+                    title="New Arrivals"
+                    subtitle="Fresh off the loom"
+                    viewAllHref="/category/all?sort=-createdAt"
+                    viewAllLabel="View All"
                     size="sm"
                   />
-                  <div className="flex items-center justify-center">
-                    <div className="flex flex-wrap items-center justify-center gap-2">
-                      {OCCASIONS.map((occ) => (
-                        <OccasionButton
-                          key={occ.label}
-                          label={occ.label}
-                          icon={occ.icon}
-                          href={occ.href}
-                          compact
-                        />
-                      ))}
-                    </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {newArrivals.map((p) => (
+                      <ProductCard key={p.id} product={p} badge="new" />
+                    ))}
                   </div>
                 </div>
+              )}
+
+              {/* ── Trending Now ── */}
+              {trendingNow.length > 0 && (
                 <div>
                   <SectionHeading
-                    title="Trending Colors"
-                    subtitle="This season's most-loved shades"
+                    title="Trending Now"
+                    subtitle="What everyone is loving"
+                    viewAllHref="/category/all"
+                    viewAllLabel="View more"
                     size="sm"
                   />
-                  <TrendingColors compact />
+                  <div className="grid grid-cols-2 gap-2">
+                    {trendingNow.map((p) => (
+                      <ProductCard key={p.id} product={p} />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* ── Best Offers ── */}
+              {bestOffers.length > 0 && (
+                <div>
+                  <SectionHeading
+                    title="Best Offers"
+                    subtitle="Handpicked deals just for you"
+                    viewAllHref="/category/all?sale=true"
+                    viewAllLabel="View all deals"
+                    size="sm"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    {bestOffers.map((p) => (
+                      <ProductCard key={p.id} product={p} badge="sale" />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -519,7 +540,7 @@ export default async function HomePage({ searchParams }: Props) {
       {/* ═══════════════════════════════════════════════════
           SECTION 5: BEST SELLERS
           ═══════════════════════════════════════════════════ */}
-      {productBlocks[1] && dbProducts.length > 0 && (
+      {productBlocks[1] && allProductsRes.docs.length > 0 && (
         <section className="bg-brand-50/20">
           <div className="container-page py-10 sm:py-14 md:py-20">
             <SectionHeading
@@ -529,7 +550,10 @@ export default async function HomePage({ searchParams }: Props) {
               viewAllLabel={productBlocks[1].ctaText || 'Shop All'}
             />
             <ProductCarousel
-              products={productsSlice(4, productBlockLimit(productBlocks[1]))}
+              products={allProductsRes.docs.slice(
+                0,
+                productBlockLimit(productBlocks[1]),
+              )}
             />
           </div>
         </section>
