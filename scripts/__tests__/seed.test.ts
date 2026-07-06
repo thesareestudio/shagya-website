@@ -15,6 +15,7 @@ import {
   navigations,
   siteSettingsData,
 } from '../seed-data'
+import type { SeedHeroBlock } from '../seed-data'
 
 describe('Seed data', () => {
   // ---------------------------------------------------------------------------
@@ -241,6 +242,15 @@ describe('Seed data', () => {
     it('has correct template for FAQ page', () => {
       const faqPage = pages.find((p) => p.title === 'FAQ')
       expect(faqPage?.template).toBe('faq')
+    })
+
+    it('home page hero block has a background image path', () => {
+      const homePage = pages.find((p) => p.title === 'Home')
+      const heroBlock = homePage?.blocks.find(
+        (b): b is SeedHeroBlock => b.blockType === 'hero',
+      )
+      expect(heroBlock).toBeDefined()
+      expect(heroBlock?.imagePath).toBe('/images/hero/hero-main.png')
     })
   })
 

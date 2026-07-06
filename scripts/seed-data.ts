@@ -1058,6 +1058,7 @@ export const pages: SeedPage[] = [
         heading: 'Shayga — Handwoven narratives from Varanasi',
         subheading:
           'Discover the heritage of Indian handloom. Each saree is a testament to centuries of artisanal weaving, bringing the rich history of Varanasi to your wardrobe.',
+        imagePath: '/images/hero/hero-main.png',
         ctaText: 'Shop the collection',
         ctaLink: '/category/all',
       } as SeedHeroBlock,
