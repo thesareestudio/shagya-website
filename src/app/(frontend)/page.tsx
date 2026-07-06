@@ -3,8 +3,8 @@ import {
   Truck,
   RotateCcw,
   ShieldCheck,
-  Hand,
-  Leaf,
+  Sparkles,
+  Lock,
 } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
@@ -15,7 +15,6 @@ import { RefreshRouteOnSave } from '@/components/live-preview/RefreshRouteOnSave
 import { SectionHeading } from '@/components/homepage/SectionHeading'
 import { ProductCard, ProductCarousel } from '@/components/homepage/ProductCard'
 import { CategoryCard } from '@/components/homepage/CategoryCard'
-import { TrustFeature } from '@/components/homepage/TrustFeature'
 import { OccasionButton } from '@/components/homepage/OccasionButton'
 import { TrendingColors } from '@/components/homepage/TrendingColors'
 import { InstagramGallery } from '@/components/homepage/InstagramGallery'
@@ -169,29 +168,29 @@ export default async function HomePage({ searchParams }: Props) {
 
   const TRUST_FEATURES = [
     {
-      icon: <Truck className="h-5 w-5" />,
+      icon: <Truck className="h-7 w-7" />,
       title: 'Free Shipping',
-      description: 'On all orders above ₹999',
+      description: 'On all orders above ₹1,999',
     },
     {
-      icon: <RotateCcw className="h-5 w-5" />,
+      icon: <RotateCcw className="h-7 w-7" />,
       title: 'Easy Returns',
       description: '15-day hassle-free returns',
     },
     {
-      icon: <ShieldCheck className="h-5 w-5" />,
+      icon: <ShieldCheck className="h-7 w-7" />,
       title: 'Authentic Handloom',
       description: 'Verified by our craft team',
     },
     {
-      icon: <Hand className="h-5 w-5" />,
-      title: 'Maker-Traced',
-      description: 'Know who wove your saree',
+      icon: <Sparkles className="h-7 w-7" />,
+      title: 'Premium Fabric',
+      description: 'Handpicked quality materials',
     },
     {
-      icon: <Leaf className="h-5 w-5" />,
-      title: 'Eco-Conscious',
-      description: 'Natural dyes & fair practices',
+      icon: <Lock className="h-7 w-7" />,
+      title: 'Secure Payment',
+      description: 'Protected checkout',
     },
   ]
 
@@ -285,7 +284,7 @@ export default async function HomePage({ searchParams }: Props) {
       {/* ═══════════════════════════════════════════════════
           SECTION 1: HERO — Full-bleed background image
           ═══════════════════════════════════════════════════ */}
-      <section className="relative min-h-[80vh] overflow-hidden">
+      <section className="relative overflow-hidden">
         {/* Full-bleed background image */}
         <div className="absolute inset-0">
           <SkeletonImage
@@ -301,66 +300,66 @@ export default async function HomePage({ searchParams }: Props) {
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
         </div>
 
-        <div className="container-page relative flex min-h-[80vh] items-center py-20 sm:py-24 md:py-28">
-          <div className="max-w-2xl">
+        <div className="container-page relative flex items-center py-4 sm:py-6">
+          <div className="max-w-xl">
             {/* Subtle branding tag */}
-            <div className="mb-6 flex items-center gap-2 text-xs font-medium tracking-[0.2em] text-white/70 uppercase">
-              <span className="bg-gold-400 h-px w-8" />
+            <div className="mb-3 flex items-center gap-2 text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase">
+              <span className="bg-brand-400 h-px w-6" />
               Shayga Handlooms
             </div>
 
-            {/* Tagline: "Timeless Elegance" black + "in every drape" brand color */}
-            <h1 className="font-display text-5xl leading-[1.1] font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
+            {/* Tagline */}
+            <h1 className="font-display text-3xl leading-[1.1] font-bold tracking-tight sm:text-4xl md:text-5xl">
               <span className="text-white">Timeless</span>{' '}
               <span className="text-white">Elegance</span>
               <br />
-              <span className="text-gold-400">in every drape</span>
+              <span className="text-brand-300">in every drape</span>
             </h1>
 
-            <p className="mt-6 max-w-[50ch] text-base leading-relaxed text-white/80 sm:text-lg">
+            <p className="mt-3 max-w-[50ch] text-sm leading-relaxed text-white/80 sm:text-base">
               {heroBlock?.subheading ||
                 "Every saree carries the story of the hands that wove it. Direct from India's weaving clusters — no middlemen, no markup."}
             </p>
 
             {/* CTAs */}
-            <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <div className="mt-5 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <Link
                 href={heroBlock?.ctaLink || '/category/all'}
-                className="group bg-gold-500 text-brand-950 hover:bg-gold-400 inline-flex h-13 items-center gap-2 rounded-xl px-7 text-base font-semibold transition-all active:scale-[0.97]"
+                className="group bg-brand-600 hover:bg-brand-500 inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-white transition-all active:scale-[0.97]"
               >
                 {heroBlock?.ctaText || 'Shop the collection'}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/about"
-                className="group inline-flex h-13 items-center gap-2 text-base font-medium text-white/80 transition-colors hover:text-white"
+                className="group inline-flex h-10 items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
               >
                 Our craft story
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
 
             {/* Stats bar */}
-            <div className="mt-12 flex items-center gap-8 text-sm text-white/60">
+            <div className="mt-6 flex items-center gap-5 text-xs text-white/60">
               <div>
-                <span className="font-display block text-lg font-semibold text-white">
+                <span className="font-display block text-base font-semibold text-white">
                   6
                 </span>
-                <span className="text-xs">Weaving clusters</span>
+                <span className="text-[10px]">Weaving clusters</span>
               </div>
-              <div className="h-10 w-px bg-white/20" />
+              <div className="h-8 w-px bg-white/20" />
               <div>
-                <span className="font-display block text-lg font-semibold text-white">
+                <span className="font-display block text-base font-semibold text-white">
                   10+
                 </span>
-                <span className="text-xs">Traditional weaves</span>
+                <span className="text-[10px]">Traditional weaves</span>
               </div>
-              <div className="h-10 w-px bg-white/20" />
+              <div className="h-8 w-px bg-white/20" />
               <div>
-                <span className="font-display block text-lg font-semibold text-white">
+                <span className="font-display block text-base font-semibold text-white">
                   100%
                 </span>
-                <span className="text-xs">Maker-traced</span>
+                <span className="text-[10px]">Maker-traced</span>
               </div>
             </div>
           </div>
@@ -371,17 +370,22 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 2: TRUST FEATURES
           ═══════════════════════════════════════════════════ */}
       <section className="border-brand-100/40 bg-brand-50/30 border-y">
-        <div className="container-page py-6 sm:py-8">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
-            {TRUST_FEATURES.map((feature) => (
-              <TrustFeature
-                key={feature.title}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
-            ))}
-          </div>
+        <div className="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-3 px-4 py-4 sm:gap-x-10 sm:py-5 md:gap-x-14 lg:gap-x-18">
+          {TRUST_FEATURES.map((feature) => (
+            <div key={feature.title} className="flex items-start gap-2">
+              <div className="text-brand-600 flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9">
+                {feature.icon}
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-brand-950 text-xs font-medium whitespace-nowrap sm:text-sm">
+                  {feature.title}
+                </span>
+                <span className="text-brand-700/50 text-[10px] sm:text-xs">
+                  {feature.description}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -389,9 +393,9 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 3: SHOP BY CATEGORY
           ═══════════════════════════════════════════════════ */}
       <section className="bg-white">
-        <div className="container-page py-16 sm:py-20 md:py-28">
+        <div className="container-page py-10 sm:py-14 md:py-20">
           <SectionHeading
-            title={categoriesBlock?.heading || 'Shop by Category'}
+            title="Our Collection"
             subtitle={
               categoriesBlock?.subheading ||
               'Explore our collection of handloom sarees, each woven with tradition and care'
@@ -426,55 +430,86 @@ export default async function HomePage({ searchParams }: Props) {
       </section>
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 4: NEW ARRIVALS
+          SECTION 4: COMBINED — New Arrivals + Trending Now + Shop by Occasion
           ═══════════════════════════════════════════════════ */}
-      {productBlocks[0] && dbProducts.length > 0 && (
-        <section className="bg-brand-50/20">
-          <div className="container-page py-16 sm:py-20 md:py-28">
-            <SectionHeading
-              title={productBlocks[0].heading || 'New Arrivals'}
-              subtitle="Fresh off the loom — our latest handloom pieces, just landed"
-              viewAllHref={
-                productBlocks[0].ctaLink || '/category/all?sort=-createdAt'
-              }
-              viewAllLabel={productBlocks[0].ctaText || 'View All'}
-            />
-            <ProductCarousel
-              products={productsSlice(0, productBlockLimit(productBlocks[0]))}
-              badge="new"
-            />
+      {dbProducts.length > 0 && (
+        <section className="bg-white">
+          <div className="container-page py-10 sm:py-14 md:py-20">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-6 lg:gap-10">
+              {/* ── New Arrivals ── */}
+              <div>
+                <SectionHeading
+                  title="New Arrivals"
+                  subtitle="Fresh off the loom"
+                  viewAllHref="/category/all?sort=-createdAt"
+                  viewAllLabel="View All"
+                  size="sm"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  {productsSlice(0, 2).map((p) => (
+                    <ProductCard key={p.id} product={p} badge="new" />
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Trending Now ── */}
+              <div>
+                <SectionHeading
+                  title="Trending Now"
+                  subtitle="What everyone is loving"
+                  viewAllHref="/category/all"
+                  viewAllLabel="View more"
+                  size="sm"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  {productsSlice(2, 2).map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+              </div>
+
+              {/* ── 3rd column: Shop by Occasion + Trending Colors ── */}
+              <div className="flex flex-col gap-8">
+                <div>
+                  <SectionHeading
+                    title="Shop by Occasion"
+                    subtitle="Find the perfect saree"
+                    size="sm"
+                  />
+                  <div className="flex items-center justify-center">
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {OCCASIONS.map((occ) => (
+                        <OccasionButton
+                          key={occ.label}
+                          label={occ.label}
+                          icon={occ.icon}
+                          href={occ.href}
+                          compact
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <SectionHeading
+                    title="Trending Colors"
+                    subtitle="This season's most-loved shades"
+                    size="sm"
+                  />
+                  <TrendingColors compact />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       )}
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 5: SHOP BY OCCASION
-          ═══════════════════════════════════════════════════ */}
-      <section className="bg-white">
-        <div className="container-page py-16 sm:py-20 md:py-28">
-          <SectionHeading
-            title="Shop by Occasion"
-            subtitle="Find the perfect saree for every moment"
-          />
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-14">
-            {OCCASIONS.map((occ) => (
-              <OccasionButton
-                key={occ.label}
-                label={occ.label}
-                icon={occ.icon}
-                href={occ.href}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          SECTION 6: BEST SELLERS
+          SECTION 5: BEST SELLERS
           ═══════════════════════════════════════════════════ */}
       {productBlocks[1] && dbProducts.length > 0 && (
         <section className="bg-brand-50/20">
-          <div className="container-page py-16 sm:py-20 md:py-28">
+          <div className="container-page py-10 sm:py-14 md:py-20">
             <SectionHeading
               title={productBlocks[1].heading || 'Best Sellers'}
               subtitle="Our community's most-loved weaves — for good reason"
@@ -490,43 +525,11 @@ export default async function HomePage({ searchParams }: Props) {
       )}
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 7: TRENDING COLORS
-          ═══════════════════════════════════════════════════ */}
-      <section className="bg-white">
-        <div className="container-page py-16 sm:py-20 md:py-28">
-          <SectionHeading
-            title="Trending Colors"
-            subtitle="This season's most-loved shades"
-          />
-          <TrendingColors />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          SECTION 8: TRENDING NOW (3rd product block)
-          ═══════════════════════════════════════════════════ */}
-      {productBlocks[2] && dbProducts.length > 0 && (
-        <section className="bg-brand-50/20">
-          <div className="container-page py-16 sm:py-20 md:py-28">
-            <SectionHeading
-              title={productBlocks[2].heading || 'Trending Now'}
-              subtitle="What everyone is loving this month"
-              viewAllHref={productBlocks[2].ctaLink || '/category/all'}
-              viewAllLabel={productBlocks[2].ctaText || 'Shop All'}
-            />
-            <ProductCarousel
-              products={productsSlice(8, productBlockLimit(productBlocks[2]))}
-            />
-          </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════════
           SECTION 9: BLOG POSTS
           ═══════════════════════════════════════════════════ */}
       {dbPosts.length > 0 && (
         <section className="bg-white">
-          <div className="container-page py-16 sm:py-20 md:py-28">
+          <div className="container-page py-10 sm:py-14 md:py-20">
             <SectionHeading
               title={postBlock?.heading || 'From the Loom'}
               subtitle="Stories from India's weaving clusters"
@@ -597,7 +600,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 10: INSTAGRAM GALLERY
           ═══════════════════════════════════════════════════ */}
       <section className="bg-brand-50/20">
-        <div className="container-page py-16 sm:py-20 md:py-28">
+        <div className="container-page py-10 sm:py-14 md:py-20">
           <SectionHeading
             title="Follow the Loom"
             subtitle="@shayga — tag us for a chance to be featured"
@@ -612,7 +615,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 11: TESTIMONIALS
           ═══════════════════════════════════════════════════ */}
       <section className="bg-white">
-        <div className="container-page py-16 sm:py-20 md:py-28">
+        <div className="container-page py-10 sm:py-14 md:py-20">
           <SectionHeading
             title={testimonialBlock?.heading || 'Loved by our community'}
             subtitle="Real stories from saree lovers across India"
@@ -642,7 +645,7 @@ export default async function HomePage({ searchParams }: Props) {
       </section>
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 12: NEWSLETTER + FOOTER CTA
+          SECTION 12: NEWSLETTER + PROMISE (side by side)
           ═══════════════════════════════════════════════════ */}
       <section className="bg-brand-950 relative overflow-hidden">
         {/* Decorative pattern */}
@@ -661,73 +664,59 @@ export default async function HomePage({ searchParams }: Props) {
 
         <div className="rule-gold" />
 
-        <div className="container-page relative py-20 sm:py-28 md:py-36">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="bg-gold-500/20 mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full">
-              <svg
-                className="text-gold-400 h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
+        <div className="container-page relative py-10 sm:py-14 md:py-20">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8">
+            {/* ── Promise ── */}
+            <div>
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Every saree is signed by its maker
+              </h2>
+              <p className="text-brand-200/70 mt-4 max-w-[50ch] text-base leading-relaxed sm:text-lg">
+                Handloom-verified. Maker-traced. No middleman markup, no
+                warehouse mystery stock — just the cloth, the cluster it came
+                from, and a fair price on both sides.
+              </p>
+              <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row">
+                <Link
+                  href="/category/all"
+                  className="text-brand-800 hover:bg-gold-100 inline-flex h-11 items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold transition-all active:scale-[0.97]"
+                >
+                  Begin browsing
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/about"
+                  className="group text-brand-300 inline-flex h-11 items-center gap-2 text-sm font-medium transition-colors hover:text-white"
+                >
+                  Meet the weavers
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
             </div>
 
-            <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-              A weekly note from the loom
-            </h2>
-            <p className="text-brand-200/70 mx-auto mt-4 max-w-[50ch] text-base leading-relaxed">
-              One weave, one maker, one thing worth knowing. No marketing noise,
-              no newsletters-that-are-really-sales-pitches. Unsubscribe anytime.
-            </p>
-
-            <div className="mx-auto mt-8 max-w-md">
-              <NewsletterForm />
+            {/* ── Newsletter ── */}
+            <div>
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                A weekly note
+                <br />
+                from the loom
+              </h2>
+              <p className="text-brand-200/70 mt-4 max-w-md text-base leading-relaxed">
+                One weave, one maker, one thing worth knowing. No marketing
+                noise, no newsletters-that-are-really-sales-pitches. Unsubscribe
+                anytime.
+              </p>
+              <div className="mt-8 max-w-md">
+                <NewsletterForm />
+              </div>
+              <p className="text-brand-400/60 mt-3 text-xs">
+                No spam. One email a week. Unsubscribe in one click.
+              </p>
             </div>
-
-            <p className="text-brand-400/60 mt-4 text-xs">
-              No spam. One email a week. Unsubscribe in one click.
-            </p>
           </div>
         </div>
 
         <div className="rule-gold" />
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          PROMISE BAND
-          ═══════════════════════════════════════════════════ */}
-      <section className="bg-brand-950 relative">
-        <div className="container-page py-16 text-center sm:py-20 md:py-24">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
-              Every saree is signed by its maker
-            </h2>
-            <p className="text-brand-200/70 mx-auto mt-5 max-w-[55ch] text-base leading-relaxed sm:text-lg">
-              Handloom-verified. Maker-traced. No middleman markup, no warehouse
-              mystery stock — just the cloth, the cluster it came from, and a
-              fair price on both sides.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
-              <Link
-                href="/category/all"
-                className="text-brand-800 hover:bg-gold-100 inline-flex h-12 items-center gap-2 rounded-xl bg-white px-7 text-base font-semibold transition-all active:scale-[0.97] sm:h-13"
-              >
-                Begin browsing
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/about"
-                className="group text-brand-300 inline-flex h-12 items-center gap-2 text-base font-medium transition-colors hover:text-white sm:h-13"
-              >
-                Meet the weavers
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   )

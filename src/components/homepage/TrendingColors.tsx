@@ -13,25 +13,43 @@ interface ColorSwatchProps {
   name: string
   hex: string
   href?: string
+  compact?: boolean
   className?: string
 }
 
-function ColorSwatch({ name, hex, href = '#', className }: ColorSwatchProps) {
+function ColorSwatch({
+  name,
+  hex,
+  href = '#',
+  compact,
+  className,
+}: ColorSwatchProps) {
   return (
     <a
       href={href}
       className={cn(
-        'group flex flex-col items-center gap-2 transition-all duration-300 hover:-translate-y-0.5',
+        'group flex flex-col items-center transition-all duration-300 hover:-translate-y-0.5',
+        compact ? 'gap-0.5' : 'gap-2',
         className,
       )}
     >
       <div
-        className="ring-brand-100/30 group-hover:ring-brand-300/50 h-14 w-14 rounded-full border-2 border-white shadow-sm ring-1 transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16"
+        className={cn(
+          'rounded-full border-2 border-white shadow-sm transition-transform duration-300 group-hover:scale-110',
+          compact
+            ? 'h-9 w-9 ring-0'
+            : 'ring-brand-100/30 group-hover:ring-brand-300/50 h-14 w-14 ring-1 sm:h-16 sm:w-16',
+        )}
         style={{ backgroundColor: hex }}
       >
         <span className="sr-only">{name}</span>
       </div>
-      <span className="font-body text-brand-700/70 group-hover:text-brand-700 text-[11px] font-medium transition-colors sm:text-xs">
+      <span
+        className={cn(
+          'font-body text-brand-700/70 group-hover:text-brand-700 font-medium transition-colors',
+          compact ? 'text-[10px]' : 'text-[11px] sm:text-xs',
+        )}
+      >
         {name}
       </span>
     </a>
@@ -39,13 +57,18 @@ function ColorSwatch({ name, hex, href = '#', className }: ColorSwatchProps) {
 }
 
 interface TrendingColorsProps {
+  compact?: boolean
   className?: string
 }
 
-export function TrendingColors({ className }: TrendingColorsProps) {
+export function TrendingColors({ compact, className }: TrendingColorsProps) {
   return (
     <div
-      className={cn('flex flex-wrap justify-center gap-4 sm:gap-6', className)}
+      className={cn(
+        'flex flex-wrap justify-center',
+        compact ? 'gap-1.5' : 'gap-4 sm:gap-6',
+        className,
+      )}
     >
       {TRENDING_COLORS.map((color) => (
         <ColorSwatch
@@ -53,6 +76,7 @@ export function TrendingColors({ className }: TrendingColorsProps) {
           name={color.name}
           hex={color.hex}
           href={`/category/all?color=${color.slug}`}
+          compact={compact}
         />
       ))}
     </div>

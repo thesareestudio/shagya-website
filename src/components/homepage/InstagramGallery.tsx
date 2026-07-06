@@ -1,32 +1,29 @@
 import { cn } from '@/lib/utils'
 import { SkeletonImage } from '@/components/ui/SkeletonImage'
 
-const ph = (w: number, h: number, bg: string, fg: string, text: string) =>
-  `https://placehold.co/${w}x${h}/${bg}/${fg}?text=${encodeURIComponent(text)}&font=lora`
-
 const INSTAGRAM_POSTS = [
   {
-    src: ph(400, 400, '7a294b', 'f5e8ee', 'IG+1'),
+    src: '/images/instagram/ig-1.png',
     alt: 'Our latest saree collection on Instagram',
     handle: '@shayga',
   },
   {
-    src: ph(400, 400, 'c8a46a', '2d1f0e', 'IG+2'),
+    src: '/images/instagram/ig-2.png',
     alt: 'Behind the scenes at the weaving cluster',
     handle: '@shayga',
   },
   {
-    src: ph(400, 400, '2d5a3a', 'f0f5f1', 'IG+3'),
+    src: '/images/instagram/ig-3.png',
     alt: 'Natural dye process',
     handle: '@shayga',
   },
   {
-    src: ph(400, 400, '69254e', 'f5e8ee', 'IG+4'),
+    src: '/images/instagram/ig-4.png',
     alt: 'Handwoven texture close-up',
     handle: '@shayga',
   },
   {
-    src: ph(400, 400, 'e8a0b4', '2d1f0e', 'IG+5'),
+    src: '/images/instagram/ig-5.png',
     alt: 'Styled look from our community',
     handle: '@shayga',
   },
@@ -59,7 +56,6 @@ export function InstagramGallery({ className }: InstagramGalleryProps) {
               fill
               sizes="(max-width: 640px) 50vw, 20vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              unoptimized={post.src.startsWith('https://placehold.co')}
             />
           </div>
 
