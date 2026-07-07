@@ -473,9 +473,12 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 2: TRUST FEATURES
           ═══════════════════════════════════════════════════ */}
       <section className="border-brand-100/40 bg-brand-50/30 border-y">
-        <div className="flex flex-wrap items-baseline justify-start gap-x-6 gap-y-3 px-4 py-4 sm:justify-center sm:gap-x-10 sm:py-5 md:gap-x-14 lg:gap-x-18">
-          {TRUST_FEATURES.map((feature) => (
-            <div key={feature.title} className="flex items-start gap-2">
+        <div className="grid grid-cols-2 items-baseline justify-start gap-x-6 gap-y-3 px-4 py-4 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-10 sm:py-5 md:gap-x-14 lg:gap-x-18">
+          {TRUST_FEATURES.map((feature, i) => (
+            <div
+              key={feature.title}
+              className={`flex items-start gap-2 ${i === TRUST_FEATURES.length - 1 ? 'col-span-2 sm:col-span-1' : ''}`}
+            >
               <div className="text-brand-600 flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9">
                 {feature.icon}
               </div>
@@ -496,7 +499,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 3: SHOP BY CATEGORY
           ═══════════════════════════════════════════════════ */}
       <section className="bg-white">
-        <div className="container-page py-10 sm:py-14 md:py-20">
+        <div className="container-page py-6 sm:py-8 md:py-10">
           <SectionHeading
             title="Our Collection"
             subtitle={
@@ -539,7 +542,7 @@ export default async function HomePage({ searchParams }: Props) {
         trendingNow.length > 0 ||
         bestOffers.length > 0) && (
         <section className="bg-white">
-          <div className="container-page py-10 sm:py-14 md:py-20">
+          <div className="container-page py-6 sm:py-8 md:py-10">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-10">
               {/* ── New Arrivals ── */}
               {newArrivals.length > 0 && (
@@ -603,7 +606,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 5: SHOP BY OCCASION + TRENDING COLORS + SOCIAL
           ═══════════════════════════════════════════════════ */}
       <section className="bg-brand-50/20">
-        <div className="container-page py-10 sm:py-14 md:py-20">
+        <div className="container-page py-6 sm:py-8 md:py-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-10">
             {/* ── Shop by Occasion ── */}
             <div>
@@ -695,7 +698,7 @@ export default async function HomePage({ searchParams }: Props) {
           ═══════════════════════════════════════════════════ */}
       {productBlocks[1] && allProductsRes.docs.length > 0 && (
         <section className="bg-brand-50/20">
-          <div className="container-page py-10 sm:py-14 md:py-20">
+          <div className="container-page py-6 sm:py-8 md:py-10">
             <SectionHeading
               title={productBlocks[1].heading || 'Best Sellers'}
               subtitle="Our community's most-loved weaves — for good reason"
@@ -717,7 +720,7 @@ export default async function HomePage({ searchParams }: Props) {
           ═══════════════════════════════════════════════════ */}
       {dbPosts.length > 0 && (
         <section className="bg-white">
-          <div className="container-page py-10 sm:py-14 md:py-20">
+          <div className="container-page py-6 sm:py-8 md:py-10">
             <SectionHeading
               title={postBlock?.heading || 'From the Loom'}
               subtitle="Stories from India's weaving clusters"
@@ -788,7 +791,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 8: INSTAGRAM GALLERY
           ═══════════════════════════════════════════════════ */}
       <section className="bg-brand-50/20">
-        <div className="container-page py-10 sm:py-14 md:py-20">
+        <div className="container-page py-6 sm:py-8 md:py-10">
           <SectionHeading
             title="Follow the Loom"
             subtitle="@shayga — tag us for a chance to be featured"
@@ -803,7 +806,7 @@ export default async function HomePage({ searchParams }: Props) {
           SECTION 9: TESTIMONIALS
           ═══════════════════════════════════════════════════ */}
       <section className="bg-white">
-        <div className="container-page py-10 sm:py-14 md:py-20">
+        <div className="container-page py-6 sm:py-8 md:py-10">
           <SectionHeading
             title={testimonialBlock?.heading || 'Loved by our community'}
             subtitle="Real stories from saree lovers across India"
@@ -871,7 +874,7 @@ export default async function HomePage({ searchParams }: Props) {
 
         <div className="rule-gold" />
 
-        <div className="container-page relative py-10 sm:py-14 md:py-20">
+        <div className="container-page relative py-6 sm:py-8 md:py-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-8">
             {/* ── Promise ── */}
             <div>

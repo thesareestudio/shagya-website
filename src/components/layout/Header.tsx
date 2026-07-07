@@ -210,17 +210,15 @@ export function Header() {
             : 'pointer-events-none translate-x-full opacity-0',
         )}
       >
-        <div className="container-page">
-          <div className="flex h-15 items-center justify-between gap-6 border-b border-neutral-200">
-            <Logo wordmarkClassName="text-neutral-900" />
-            <button
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close menu"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="flex h-15 items-center justify-between border-b border-neutral-200 pr-1 pl-4">
+          <Logo wordmarkClassName="text-neutral-900" />
+          <button
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-6 py-10 sm:px-8">

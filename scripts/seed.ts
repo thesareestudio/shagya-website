@@ -266,6 +266,9 @@ async function uploadMedia(
   }
 
   const filename = path.basename(imagePath)
+  const fileData = fs.readFileSync(fullPath)
+  const fileSize = fs.statSync(fullPath).size
+
   const existing = await payload.find({
     collection: 'media',
     where: {
@@ -276,7 +279,22 @@ async function uploadMedia(
   })
 
   if (existing.docs.length > 0) {
-    return existing.docs[0].id as any
+    const existingDoc = existing.docs[0] as any
+    // If file sizes differ, re-upload (delete old, create new)
+    if (existingDoc.filesize !== fileSize) {
+      console.log(`    🔄 File changed for ${filename}, re-uploading...`)
+      try {
+        await payload.delete({
+          collection: 'media',
+          id: existingDoc.id,
+          overrideAccess: true,
+        })
+      } catch {
+        // ignore delete errors
+      }
+    } else {
+      return existingDoc.id as number
+    }
   }
 
   try {
@@ -286,10 +304,10 @@ async function uploadMedia(
         alt: altText,
       },
       file: {
-        data: fs.readFileSync(fullPath),
+        data: fileData,
         name: filename,
         mimetype: getMimeType(filename),
-        size: fs.statSync(fullPath).size,
+        size: fileSize,
       },
       overrideAccess: true,
     })
@@ -601,13 +619,15 @@ export async function seedBlogPosts(payload: Payload): Promise<void> {
       console.log(`  ✅ Created blog post: ${post.title}`)
     } else {
       const doc = existing.docs[0]
-      if (!doc.featuredImage && post.imagePath) {
-        const featuredImageId = await uploadMedia(
-          payload,
-          post.imagePath,
-          post.title,
-        )
-        if (featuredImageId) {
+      const featuredImageId = post.imagePath
+        ? await uploadMedia(payload, post.imagePath, post.title)
+        : null
+      if (featuredImageId) {
+        const oldImageId =
+          typeof doc.featuredImage === 'object'
+            ? (doc.featuredImage as any).id
+            : doc.featuredImage
+        if (oldImageId !== featuredImageId) {
           await (payload.update as any)({
             collection: 'posts',
             id: doc.id,
@@ -616,9 +636,8 @@ export async function seedBlogPosts(payload: Payload): Promise<void> {
           })
           console.log(`  ✅ Updated featured image for: ${post.title}`)
         }
-      } else {
-        console.log(`  ⏭️  Blog post already exists: ${post.title}`)
       }
+      console.log(`  ⏭️  Blog post already exists: ${post.title}`)
     }
   }
 }
