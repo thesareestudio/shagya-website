@@ -657,10 +657,11 @@ export async function seedBlogPosts(payload: Payload): Promise<void> {
         ? await uploadMedia(payload, post.imagePath, post.title)
         : null
       if (featuredImageId) {
-        const oldImageId =
-          typeof doc.featuredImage === 'object'
+        const oldImageId = doc.featuredImage
+          ? typeof doc.featuredImage === 'object'
             ? (doc.featuredImage as any).id
             : doc.featuredImage
+          : null
         if (oldImageId !== featuredImageId) {
           await (payload.update as any)({
             collection: 'posts',
