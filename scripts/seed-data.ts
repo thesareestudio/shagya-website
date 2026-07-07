@@ -1143,7 +1143,7 @@ export const pages: SeedPage[] = [
     blocks: [
       {
         blockType: 'hero',
-        heading: 'Shayga — Handwoven narratives from Varanasi',
+        heading: 'Timeless Elegance in Every Drape',
         subheading:
           'Discover the heritage of Indian handloom. Each saree is a testament to centuries of artisanal weaving, bringing the rich history of Varanasi to your wardrobe.',
         imagePath: '/images/hero/hero-main.png',
