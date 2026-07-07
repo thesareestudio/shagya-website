@@ -87,7 +87,7 @@ download_batch "indian fashion model portrait" "$AVTR" avatar jpg 3 "%d"
 # ---------------------------------------------------------------------------
 # Instagram gallery images — 5 square photos (ig-1.jpg to ig-5.jpg)
 # ---------------------------------------------------------------------------
-download_batch "indian saree instagram style" "$IG" ig jpg 5 "%d"
+download_batch "indian saree instagram style model" "$IG" ig jpg 5 "%d"
 
 echo ""
 echo "  ✅  All seed images downloaded."
